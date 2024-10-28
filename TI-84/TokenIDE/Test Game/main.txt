@@ -1,0 +1,21 @@
+0→e "end flag
+startTmr→t "start clock
+0→k "key code input
+25→u "up key code
+0→s "score
+2→g "gravity
+0→y "player y position
+0→v "player y velocity
+2→i "player y impulse acceleration
+0→x "obstacle
+0→w "obstacle x velocity
+ClrHome
+// Main loop (called each frame)
+While e=0
+checkTmr(t "update timer
+getKey→k "set k to input
+If k=105 "if keycode = the exit code
+Stop
+If k=u "if keycode = the jump code
+i→v "player velocity = impulse acceleration
+y+v→y "update y pos with velocity
