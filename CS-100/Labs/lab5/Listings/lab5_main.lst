@@ -1,0 +1,473 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; CS 100 Lab 5
+    2 00000000         ; Due Date:
+    3 00000000         ; Student Name: 
+    4 00000000         ; Section: 
+    5 00000000         
+    6 00000000         ; © 2019 DigiPen, All Rights Reserved.
+    7 00000000         
+    8 00000000                 GET              Lab5_Data.s ;Includes Lab5_Data
+                                                            .s file 
+    1 00000000                 AREA             DATA, CODE, READONLY ; Area of 
+                                                            code named "DATA" t
+                                                            hat is read only
+    2 00000000         
+    3 00000000 400FE608 
+                       RCGCGPIO
+                               EQU              0X400FE608  ;Address of GPIO Mo
+                                                            dule, it ACTIVATES 
+                                                            PORTS...
+    4 00000000         ; ...bit 0 = port A, bit 1 = port B, ... and bit 5 = por
+                       t F
+    5 00000000         
+    6 00000000         ; LED 3 is connected to PB4
+    7 00000000 400053FC 
+                       LED_DATA
+                               EQU              0X400053FC  ; Address of Port B
+                                                             (DATA)of our micro
+                                                            controller
+    8 00000000 40005400 
+                       LED_DIR EQU              0x40005400  ; Address of Port B
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+    9 00000000 4000551C 
+                       LED_DEN EQU              0X4000551C  ; Address of Port B
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   10 00000000 00000004 
+                       LED4_BIT
+                               EQU              4           ; PB4 bit position 
+                                                            (0x00010000) includ
+                                                            ing position 0
+   11 00000000         
+   12 00000000         ;Constants 
+   13 00000000 0000002A 
+                       LITERAL_SMALL
+                               EQU              0x2A        ; Label equates to 
+                                                            small hexadecimal v
+                                                            alue 0x2A (42)
+   14 00000000 000FFFFF 
+                       LITERAL_LARGE
+                               EQU              0xFFFFF     ; Label equates to 
+                                                            large hexadecimal v
+                                                            alue 0xFFFFF (10485
+                                                            75)
+   15 00000000         
+   16 00000000         
+   17 00000000                 END
+    9 00000000         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   10 00000000         
+   11 00000000         ; Area of data named "MyData" that is Read/Write in the 
+                       form 
+   12 00000000         ;     AREA <area name>, <area type>, <accessibility>
+   13 00000000         ;     area name -----> can be any string
+   14 00000000         ;     area type -----> CODE or DATA
+   15 00000000         ;     accessibility -> READONLY or READWRITE
+   16 00000000         
+   17 00000000         
+   18 00000000                 AREA             MyData, DATA, READWRITE
+   19 00000000 00 00 00 
+              00       myspace SPACE            4           ; The label myspace
+                                                             is an allocated bl
+                                                            ock of data of size
+                                                             4.
+   20 00000004         ; myspace is declared in area MyData, which is READWRITE
+                       , 
+   21 00000004         ;   so the contents can be modified at runtime
+   22 00000004         
+   23 00000004                 GLOBAL           __main      ; Allows reset hand
+                                                            ler access and "cal
+                                                            l" __main
+   24 00000004                 AREA             MainCode, CODE, READONLY ; Area
+                                                             of code named "Mai
+                                                            nCode" that is read
+                                                             only
+   25 00000000                 ENTRY                        ; Entry into the co
+                                                            de segment
+   26 00000000         
+   27 00000000         
+   28 00000000         ; Label main which is branched to on reset
+   29 00000000         __main
+   30 00000000         
+   31 00000000         ; Example 1: Different methods of loading registers
+   32 00000000         
+   33 00000000 F04F 002A       MOV              R0, #LITERAL_SMALL ; Copy small
+                                                             literal by label i
+                                                            nto R0
+   34 00000004 491E            LDR              R1, =LITERAL_LARGE ; Load large
+                                                             literal by label i
+                                                            nto R1
+   35 00000006         ; A value that exceeds 16 bits (2 bytes) must be loaded.
+                       ..
+   36 00000006         ; ...using LDR (instead of MOV) and with syntax =<label>
+                       
+   37 00000006 460A            MOV              R2, R1      ; Copy the value co
+                                                            ntained within R1 i
+                                                            nto R2
+   38 00000008         
+   39 00000008 BF00            NOP                          ; BREAKPOINT
+   40 0000000A         
+   41 0000000A         ;Example 2: Loading registers with literals of various b
+                       ases
+   42 0000000A         
+   43 0000000A F04F 000C       MOV              R0, #12     ; Copy literal DECI
+                                                            MAL value 12 into R
+                                                            0    
+   44 0000000E F04F 010C       MOV              R1, #2_1100 ; Copy literal BINA
+                                                            RY value 1100 (12) 
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+                                                            into R1
+   45 00000012 F04F 020C       MOV              R2, #0xC    ; Copy literal HEXA
+                                                            DECIMAL value C (12
+                                                            ) into R2
+   46 00000016         
+   47 00000016 BF00            NOP                          ; BREAKPOINT
+   48 00000018         
+   49 00000018         ;Example 3: Simple operation which sums two values, then
+                        stores result into memory
+   50 00000018         
+   51 00000018 EB00 0401       ADD              R4, R0, R1  ; R4 = R0 + R1 (R4 
+                                                            = 12 + 12 = 24)
+   52 0000001C 4D19            LDR              R5, =myspace ; Load memory ADDR
+                                                            ESS under label "my
+                                                            space" into R5
+   53 0000001E 602C            STR              R4, [R5]    ; Store result of s
+                                                            um operation into m
+                                                            emory...
+   54 00000020         ; ...we reserved under "myspace" using SPACE directive
+   55 00000020 682E            LDR              R6, [R5]    ; Retrieve value fr
+                                                            om memory under "my
+                                                            space" address into
+                                                             R6.
+   56 00000022         
+   57 00000022         ; Observe the value of the memory address in R5,
+   58 00000022         ; and the value retrieved from that address in R6.
+   59 00000022         ; Copy and paste the address from R5 into the Address fi
+                       eld within the Memory window.
+   60 00000022         ; You should see the same value from R6 at this memory l
+                       ocation.
+   61 00000022         ; Note that the bits in the Memory window are represente
+                       d as hexadecimal, and in Little-Endian format.
+   62 00000022         
+   63 00000022 BF00            NOP                          ; BREAKPOINT
+   64 00000024         
+   65 00000024         ; Example 4: Configures a specific bit of one of the mic
+                       rocontrollers LED addresses in order to turn on a light,
+                       
+   66 00000024         ;            using the simple set_bit and clear_bit subr
+                       outines. 
+   67 00000024         ;    PortB - pin 4 of your microcontroller (PB4)
+   68 00000024         
+   69 00000024         ; Activate PORT B, set bit 1 of RCGCGPIO 
+   70 00000024 F8DF A060       LDR              R10, =RCGCGPIO ; Load memory ad
+                                                            dress of GPIO Modul
+                                                            e into R10
+   71 00000028 F8DA 6000       LDR              R6, [R10]   ; Load into R6 the 
+                                                            value stored in the
+                                                             address referenced
+                                                             in R10
+   72 0000002C F04F 0B01       MOV              R11, #1     ; Copy value 1 into
+                                                             R11
+   73 00000030 EA4F 0B4B       LSL              R11, R11, #1 ; Logical shift R1
+                                                            1 value LEFT by 1 b
+                                                            it positions:
+   74 00000034         ;  (0x00000001 => 0x00000010). This is creating a mask o
+                       f the PORTB pin for the RCGCPIO address in your microcon
+                       troller
+   75 00000034 EA4B 0B06       ORR              R11, R6     ; Apply an OR opera
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+                                                            tion to SET ONLY th
+                                                            e PORT B BIT of the
+                                                             value stored in th
+                                                            e address reference
+                                                            d in R10
+   76 00000038 F8CA B000       STR              R11, [R10]  ; Store modified va
+                                                            lue of R11 into ADD
+                                                            RESS referenced in 
+                                                            R10.
+   77 0000003C         ; This steps should have activated ONLY the GPIO Port B 
+                       Module on your microcontroller.
+   78 0000003C         
+   79 0000003C         ; Configure pin as an output, set bit 4 of LED_DIR      
+                            
+   80 0000003C F8DF A04C       LDR              R10, =LED_DIR ; Load memory add
+                                                            ress of the directi
+                                                            on setting of Port 
+                                                            B into R10
+   81 00000040 F8DA 6000       LDR              R6, [R10]   ; Load into R6 the 
+                                                            value stored in the
+                                                             address referenced
+                                                             in R10
+   82 00000044 F04F 0B01       MOV              R11, #1     ; Copy value 1 into
+                                                             R11
+   83 00000048 EA4F 1B0B       LSL              R11, R11, #LED4_BIT ; Logical s
+                                                            hift R11 value LEFT
+                                                             by 4 bit positions
+                                                            :
+   84 0000004C         ;  (0x00000001 => 0x00010000). This is creating a mask o
+                       f the LED pin for the PORTB address in your microcontrol
+                       ler
+   85 0000004C         
+   86 0000004C EA46 0C0B       ORR              R12, R6, R11 ; Apply an OR oper
+                                                            ation to SET ONLY t
+                                                            he LED BIT of the v
+                                                            alue stored in the 
+                                                            address referenced 
+                                                            in R10
+   87 00000050 F8CA C000       STR              R12, [R10]  ; Store modified va
+                                                            lue of R12 into ADD
+                                                            RESS referenced in 
+                                                            R10.
+   88 00000054         ; This steps should have configured the LED on your micr
+                       ocontroller as an OUTPUT.
+   89 00000054         
+   90 00000054         ; Configure pin as a digital signal, set bit 4 of LED_DE
+                       N 
+   91 00000054 F8DF A038       LDR              R10, =LED_DEN ; Load memory add
+                                                            ress of the digital
+                                                             setting of Port B 
+                                                            into R10
+   92 00000058 F8DA 6000       LDR              R6, [R10]   ; Load into R6 the 
+                                                            value stored in the
+                                                             address referenced
+                                                             in R10
+   93 0000005C EA46 0C0B       ORR              R12, R6, R11 ; Apply an OR oper
+                                                            ation to SET ONLY t
+                                                            he value stored in 
+                                                            the adreess referen
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+                                                            ced in R10
+   94 00000060 F8CA C000       STR              R12, [R10]  ; Store modified va
+                                                            lue of R12 into ADD
+                                                            RESS referenced in 
+                                                            R10.
+   95 00000064         ; This steps should have configured the LED on your micr
+                       ocontroller as a DIGITAL signal. 
+   96 00000064         
+   97 00000064         ; Turn On LED, set bit 4 of LED_DATA 
+   98 00000064 F8DF A02C       LDR              R10, =LED_DATA ; Load memory ad
+                                                            dress of the digita
+                                                            l signal of Port B 
+                                                            into R10
+   99 00000068 F8DA 6000       LDR              R6, [R10]   ; Load into R6 the 
+                                                            value stored in the
+                                                             address referenced
+                                                             in R10
+  100 0000006C F04F 0B01       MOV              R11, #1     ; Copy value 1 into
+                                                             R11
+  101 00000070 EA4F 1B0B       LSL              R11, R11, #LED4_BIT ; Logical s
+                                                            hift R11 value LEFT
+                                                             by 4 bit positions
+                                                            :
+  102 00000074         ;  example (0x01010100 => 0x01000100). 
+  103 00000074 EA46 0C0B       ORR              R12, R6, R11 ; Apply an OR oper
+                                                            ation to SET ONLY t
+                                                            he LED BIT of the v
+                                                            alue stored in the 
+                                                            address referenced 
+                                                            in R10
+  104 00000078 F8CA C000       STR              R12, [R10]  ; Store modified va
+                                                            lue of R12 into ADD
+                                                            RESS referenced in 
+                                                            R10. This is writin
+                                                            g a 1 in the LED pi
+                                                            n of your microcont
+                                                            roller
+  105 0000007C         ; This steps should turn ON the LED on your microcontrol
+                       ler.
+  106 0000007C         
+  107 0000007C BF00            NOP                          ; BREAKPOINT
+  108 0000007E         
+  109 0000007E         ; Our device will now interpret LED as "on". To test thi
+                       s:
+  110 0000007E         
+  111 0000007E         ; 1. Make sure the TivaBoard switch is configured as DEB
+                       UG
+  112 0000007E         ; 2. From tabs bar: select Flash->Erase to clear existin
+                       g code from device
+  113 0000007E         ; 3. Select Flash->Download (F8 key) or press "Load" ico
+                       n underneath it
+  114 0000007E         ; 4. Press reset button to reset execution and call __ma
+                       in
+  115 0000007E         ; 5. At this point you should observe the LED you connec
+                       ted is indeed on. 
+  116 0000007E         ;    When you press the RESET button it goes to its defa
+                       ult value "off" 
+  117 0000007E         
+  118 0000007E         
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+  119 0000007E                 END                          ; End of file, whic
+                                                            h is required to co
+                                                            mpile
+              00 00 000FFFFF 
+              00000000 
+              400FE608 
+              40005400 
+              4000551C 
+              400053FC 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\lab5_main.d -o.\objects\lab5_main.o -I.\RTE\_Target_1
+ -I"C:\Program Files (x86)\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include"
+ -I"C:\Program Files (x86)\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\
+TM4C123" --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 526" -
+-predefine="_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --list=.\listings\l
+ab5_main.lst C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 1 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: DATA unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+MyData 00000000
+
+Symbol: MyData
+   Definitions
+      At line 18 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+   Uses
+      None
+Comment: MyData unused
+myspace 00000000
+
+Symbol: myspace
+   Definitions
+      At line 19 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+   Uses
+      At line 52 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: myspace used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+MainCode 00000000
+
+Symbol: MainCode
+   Definitions
+      At line 24 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+   Uses
+      None
+Comment: MainCode unused
+__main 00000000
+
+Symbol: __main
+   Definitions
+      At line 29 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+   Uses
+      At line 23 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: __main used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+LED4_BIT 00000004
+
+Symbol: LED4_BIT
+   Definitions
+      At line 10 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 83 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+      At line 101 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+
+LED_DATA 400053FC
+
+Symbol: LED_DATA
+   Definitions
+      At line 7 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 98 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: LED_DATA used once
+LED_DEN 4000551C
+
+Symbol: LED_DEN
+   Definitions
+      At line 9 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 91 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: LED_DEN used once
+LED_DIR 40005400
+
+Symbol: LED_DIR
+   Definitions
+      At line 8 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 80 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: LED_DIR used once
+LITERAL_LARGE 000FFFFF
+
+Symbol: LITERAL_LARGE
+   Definitions
+      At line 14 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 34 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: LITERAL_LARGE used once
+LITERAL_SMALL 0000002A
+
+Symbol: LITERAL_SMALL
+   Definitions
+      At line 13 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 33 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: LITERAL_SMALL used once
+RCGCGPIO 400FE608
+
+Symbol: RCGCGPIO
+   Definitions
+      At line 3 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      At line 70 in file C:\Users\aeden.brookshire\Downloads\Lab5_Main.s
+Comment: RCGCGPIO used once
+7 symbols
+349 symbols in table

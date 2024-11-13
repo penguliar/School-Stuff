@@ -1,0 +1,141 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             DATA, CODE, READONLY ; Area of 
+                                                            code named "DATA" t
+                                                            hat is read only
+    2 00000000         
+    3 00000000 400FE608 
+                       RCGCGPIO
+                               EQU              0X400FE608  ;Address of GPIO Mo
+                                                            dule, it ACTIVATES 
+                                                            PORTS...
+    4 00000000         ; ...bit 0 = port A, bit 1 = port B, ... and bit 5 = por
+                       t F
+    5 00000000         
+    6 00000000         ; LED 3 is connected to PB4
+    7 00000000 400053FC 
+                       LED_DATA
+                               EQU              0X400053FC  ; Address of Port B
+                                                             (DATA)of our micro
+                                                            controller
+    8 00000000 40005400 
+                       LED_DIR EQU              0x40005400  ; Address of Port B
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+    9 00000000 4000551C 
+                       LED_DEN EQU              0X4000551C  ; Address of Port B
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   10 00000000 00000004 
+                       LED4_BIT
+                               EQU              4           ; PB4 bit position 
+                                                            (0x00010000) includ
+                                                            ing position 0
+   11 00000000         
+   12 00000000         ;Constants 
+   13 00000000 0000002A 
+                       LITERAL_SMALL
+                               EQU              0x2A        ; Label equates to 
+                                                            small hexadecimal v
+                                                            alue 0x2A (42)
+   14 00000000 000FFFFF 
+                       LITERAL_LARGE
+                               EQU              0xFFFFF     ; Label equates to 
+                                                            large hexadecimal v
+                                                            alue 0xFFFFF (10485
+                                                            75)
+   15 00000000         
+   16 00000000         
+   17 00000000                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\lab5_data.d -o.\objects\lab5_data.o -I.\RTE\_Target_1
+ -I"C:\Program Files (x86)\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include"
+ -I"C:\Program Files (x86)\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\
+TM4C123" --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 526" -
+-predefine="_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --list=.\listings\l
+ab5_data.lst C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 1 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: DATA unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+LED4_BIT 00000004
+
+Symbol: LED4_BIT
+   Definitions
+      At line 10 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: LED4_BIT unused
+LED_DATA 400053FC
+
+Symbol: LED_DATA
+   Definitions
+      At line 7 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: LED_DATA unused
+LED_DEN 4000551C
+
+Symbol: LED_DEN
+   Definitions
+      At line 9 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: LED_DEN unused
+LED_DIR 40005400
+
+Symbol: LED_DIR
+   Definitions
+      At line 8 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: LED_DIR unused
+LITERAL_LARGE 000FFFFF
+
+Symbol: LITERAL_LARGE
+   Definitions
+      At line 14 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: LITERAL_LARGE unused
+LITERAL_SMALL 0000002A
+
+Symbol: LITERAL_SMALL
+   Definitions
+      At line 13 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: LITERAL_SMALL unused
+RCGCGPIO 400FE608
+
+Symbol: RCGCGPIO
+   Definitions
+      At line 3 in file C:\Users\aeden.brookshire\Downloads\Lab5_Data.s
+   Uses
+      None
+Comment: RCGCGPIO unused
+7 symbols
+342 symbols in table
