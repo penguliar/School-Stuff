@@ -1,0 +1,1260 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; CS 100 Lab 8
+    2 00000000         ; Due Date: 10/30/24
+    3 00000000         ; Student Name: Aeden Brookshire
+    4 00000000         ; Section: B
+    5 00000000         ; © 2022 DigiPen, All Rights Reserved.
+    6 00000000         
+    7 00000000                 GET              rx_data.s
+    1 00000000                 AREA             DATA, CODE, READONLY
+    2 00000000         
+    3 00000000 400FE608 
+                       RCGCGPIO
+                               EQU              0X400FE608  ;Address of GPIO Mo
+                                                            dule, it ACTIVATES 
+                                                            PORTS...
+    4 00000000         ; ...bit 0 = port A, bit 1 = port B, ... and bit 5 = por
+                       t F
+    5 00000000         
+    6 00000000         ; Serial communication is attached to lines PA0(receive)
+                        and PA1(transmit) 
+    7 00000000 400043FC 
+                       GPIOADATA_RW
+                               EQU              0X400043FC  ; Address of Port A
+                                                             (DATA)of our micro
+                                                            controller (buttons
+                                                            )
+    8 00000000 40004400 
+                       GPIOADIR
+                               EQU              0x40004400  ; Address of Port A
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+    9 00000000 4000451C 
+                       GPIOADEN
+                               EQU              0X4000451C  ; Address of Port A
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   10 00000000         
+   11 00000000 40004420 
+                       GPIOAAFSEL
+                               EQU              0X40004420  ; ***2A2- Address o
+                                                            f Port A (alternate
+                                                             function select) o
+                                                            f our microcontroll
+                                                            er port a
+   12 00000000 4000452C 
+                       GPIOAPCTL
+                               EQU              0X4000452C  ; ***2A3- what the 
+                                                            actual alternate fu
+                                                            nction is for port 
+                                                            a
+   13 00000000         
+   14 00000000 400053FC 
+                       GPIOBDATA_RW
+                               EQU              0X400053FC  ; Address of Port B
+                                                             (DATA)of our micro
+                                                            controller (LEDs)
+   15 00000000 40005400 
+                       GPIOBDIR
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                               EQU              0x40005400  ; Address of Port B
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+   16 00000000 4000551C 
+                       GPIOBDEN
+                               EQU              0X4000551C  ; Address of Port B
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   17 00000000         ;PWM Settings for Port B 
+   18 00000000 40005420 
+                       GPIOBAFSEL
+                               EQU              0X40005420  ; Address of Port B
+                                                             (Alternate functio
+                                                            n SETTING) of our m
+                                                            icrocontroller
+   19 00000000 4000552C 
+                       GPIOBPCTL
+                               EQU              0X4000552C  ; Address to config
+                                                            ure which alternate
+                                                             function to use 
+   20 00000000         
+   21 00000000         ;PORT F - TIVABOARD USES PORT F, PINS PF1,PF2, AND PF3 F
+                       OR THE ONBOARD RGB LED
+   22 00000000 400253FC 
+                       GPIOFDATA_RW
+                               EQU              0X400253FC  ; ADDRESS OF PORT F
+                                                             PINS - DATA REGIST
+                                                            ER
+   23 00000000 40025400 
+                       GPIOFDIR
+                               EQU              0X40025400  ; ADDRESS OF PORT F
+                                                             - DIRECTION
+   24 00000000 4002551C 
+                       GPIOFDEN
+                               EQU              0X4002551C  ; ADDRESS OF PORT F
+                                                             PINS - DIGITAL ENA
+                                                            BLE
+   25 00000000         
+   26 00000000         
+   27 00000000         ;UART ACCESS
+   28 00000000 400FE618 
+                       RCGCUART
+                               EQU              0X400FE618  ; ***2A1- ENABLE UA
+                                                            RT MODULE USING THI
+                                                            S REGISTER (344)
+   29 00000000         
+   30 00000000         ;UART general data
+   31 00000000 4000C000 
+                       UART0   EQU              0x4000C000  ; Base address of a
+                                                            ll UART0 functions
+   32 00000000 4000C000 
+                       UART0DR EQU              UART0       ;***2B address of t
+                                                            he UART0 data regis
+                                                            ter
+   33 00000000 4000C018 
+                       UART0FR EQU              UART0+0x18  ;***2B UART0 flag r
+                                                            egister 
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   34 00000000 4000C024 
+                       UART0IBRD
+                               EQU              UART0+0x24  ;***2B UART0 intege
+                                                            r baud-rate divider
+                                                             register
+   35 00000000 4000C028 
+                       UART0FBRD
+                               EQU              UART0+0x28  ;***2B UART0 fracti
+                                                            onal baud-rate divi
+                                                            der register
+   36 00000000 4000C02C 
+                       UART0LCRH
+                               EQU              UART0+0x2C  ;***2B UART0 Line C
+                                                            ontrol register
+   37 00000000 4000C030 
+                       UART0CTL
+                               EQU              UART0+0x30  ;***2B UART0 contro
+                                                            l register
+   38 00000000 4000CFC8 
+                       UART0CC EQU              UART0+0xFC8 ;***2B UART0 Clock 
+                                                            Configuration regis
+                                                            ter
+   39 00000000         
+   40 00000000         
+   41 00000000         ;ADC Settings for Port E 
+   42 00000000 40024528 
+                       GPIOEAMSEL
+                               EQU              0X40024528  ; Address of Port E
+                                                             (ANALOG SETTING) o
+                                                            f our microcontroll
+                                                            er
+   43 00000000         
+   44 00000000         ;ADC General Settings
+   45 00000000 400FE638 
+                       RCGCADC EQU              0x400FE638  ; Enable ADC Module
+                                                             PROVIDES A CLOCK  
+                                                            BIT0 = MODULE 0 BIT
+                                                            1=MODULE 1
+   46 00000000 40038FC4 
+                       ADCPC   EQU              0X40038FC4  ; Select ADC Speed 
+                                                            1-125KSPS, 3-250KSP
+                                                            S, 5-500KSPS, 7 - 1
+                                                            MSPS
+   47 00000000 40038000 
+                       ADCACTSS
+                               EQU              0X40038000  ; Address to enable
+                                                             and disable the AD
+                                                            C Sequencer (Seq 0 
+                                                            = Bit 0) ;;(BIT 0-3
+                                                             SEQ 0 -3) BIT 16 -
+                                                             (0 IDLE) (1 BUSY) 
+                                                            
+   48 00000000 40038014 
+                       ADCEMUX EQU              0X40038014  ; Select which even
+                                                            t triggers the samp
+                                                            le sequencer (Seq 0
+                                                             bits(0- 3) 0XF = A
+                                                            LWAYS)
+   49 00000000 40038040 
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+                       ADCSSMUX0
+                               EQU              0X40038040  ; Select which ADC 
+                                                            channels the sequen
+                                                            cer 0 will read (AI
+                                                            N3 = PE0, AIN2 = PE
+                                                            1)
+   50 00000000 40038044 
+                       ADCSSCTL0
+                               EQU              0X40038044  ; Address to config
+                                                            ure the sample cont
+                                                            rol bits (interrupt
+                                                            ion and end of sequ
+                                                            encer) 
+   51 00000000 40038004 
+                       ADCRIS  EQU              0X40038004
+   52 00000000 40038048 
+                       ADCSSFIFO0
+                               EQU              0X40038048  ; DATA (BITS 0-11)
+   53 00000000 4003800C 
+                       ADCISC  EQU              0X4003800C
+   54 00000000         
+   55 00000000         
+   56 00000000         ;constants 
+   57 00000000 00D00000 
+                       COUNT1  EQU              0x00D00000
+   58 00000000         
+   59 00000000         
+   60 00000000         ; macros
+   61 00000000                 MACRO
+   62 00000000                 TRANSMIT8BITS    $BITS_TO_TRANSMIT
+   63 00000000                 MOV              R0,#$BITS_TO_TRANSMIT
+   64 00000000                 BL               _TRANSMIT
+   65 00000000                 MEND
+   66 00000000         
+   67 00000000                 MACRO
+   68 00000000                 WRITEBITS        $addr, $data
+   69 00000000                 LDR              R0, =$addr
+   70 00000000                 MOV              R1, #$data
+   71 00000000                 STR              R1, [R0]
+   72 00000000                 MEND
+   73 00000000         
+   74 00000000                 MACRO
+   75 00000000                 SETBITS          $ADDRESS, $BITS
+   76 00000000                 LDR              R1,=$BITS
+   77 00000000                 LDR              R0,=$ADDRESS
+   78 00000000                 BL               _SETBITS
+   79 00000000                 MEND
+   80 00000000         
+   81 00000000                 MACRO
+   82 00000000                 CLEARBITS        $ADDRESS, $BITS
+   83 00000000                 LDR              R1,=$BITS
+   84 00000000                 LDR              R0,=$ADDRESS
+   85 00000000                 BL               _CLEARBITS
+   86 00000000                 MEND
+   87 00000000         
+   88 00000000                 MACRO
+   89 00000000                 DLAY             $DELAYLOOPCOUNT
+   90 00000000                 LDR              R0,=$DELAYLOOPCOUNT
+   91 00000000                 BL               _DELAY
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+   92 00000000                 MEND
+   93 00000000         
+   94 00000000         
+   95 00000000         
+   96 00000000                 END
+    8 00000000         
+    9 00000000                 GLOBAL           __main
+   10 00000000                 AREA             Main, CODE, READONLY
+   11 00000000                 ALIGN            2
+   12 00000000                 ENTRY
+   13 00000000         
+   14 00000000         ;===============Bit Methods, nothing new to see here, mo
+                       ve along=======================;
+   15 00000000         _SETBITS                             ; Turn on bits at a
+                                                            ddress R0 specified
+                                                             by 1's in R1 
+   16 00000000 E92D 4FF0       PUSH             {R4-R11, LR}
+   17 00000004 6804            LDR              R4, [R0]
+   18 00000006 EA44 0401       ORR              R4, R1
+   19 0000000A 6004            STR              R4, [R0]
+   20 0000000C E8BD 4FF0       POP              {R4-R11, LR}
+   21 00000010 4770            BX               LR
+   22 00000012         
+   23 00000012         _CLEARBITS                           ; Turn off bits at 
+                                                            address R0 specifie
+                                                            d by 1's in R1
+   24 00000012 E92D 4FF0       PUSH             {R4-R11, LR}
+   25 00000016 6804            LDR              R4, [R0]
+   26 00000018 EA6F 0301       MVN              R3, R1
+   27 0000001C EA04 0403       AND              R4, R3
+   28 00000020 6004            STR              R4, [R0]
+   29 00000022 E8BD 4FF0       POP              {R4-R11, LR}
+   30 00000026 4770            BX               LR
+   31 00000028         
+   32 00000028         _DELAY                               ; Loop R0 times
+   33 00000028 E92D 4FF0       PUSH             {R4-R11, LR}
+   34 0000002C 4682            MOV              R10, R0
+   35 0000002E         LOOPDELAY
+   36 0000002E F1BA 0A01       SUBS             R10, R10, #1
+   37 00000032 F1BA 0F00       CMP              R10, #0
+   38 00000036 D1FA            BNE              LOOPDELAY
+   39 00000038 E8BD 4FF0       POP              {R4-R11, LR}
+   40 0000003C 4770            BX               LR
+   41 0000003E         
+   42 0000003E         
+   43 0000003E         
+   44 0000003E         ;==================SETUP GPIOs, nothing new to see here,
+                        move along==========================;
+   45 0000003E         ; Subroutine: output_pins_config Sets up output pins -In
+                       puts:None, Outputs:None
+   46 0000003E         output_input_pins_config
+   47 0000003E         
+   48 0000003E E92D 4FF0       PUSH             { R4-R11, LR } ; push registers
+                                                             and link register 
+                                                            to save them for wh
+                                                            at follows-
+   49 00000042                 SETBITS          RCGCGPIO, 0X33 ; Read in the cu
+                                                            rrent GPIO Module c
+                                                            onfiguration and En
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+                                                            able Ports A, B, E 
+                                                            AND F
+   76 00000042 F04F 0133       LDR              R1,=0X33
+   77 00000046 487D            LDR              R0,=RCGCGPIO
+   78 00000048 F7FF FFDA       BL               _SETBITS
+   50 0000004C                 SETBITS          GPIOADEN, 0XF3 ; Configure used
+                                                             pins of Port A as 
+                                                            digital (PA0,1,4-7)
+                                                            
+   76 0000004C F04F 01F3       LDR              R1,=0XF3
+   77 00000050 487B            LDR              R0,=GPIOADEN
+   78 00000052 F7FF FFD5       BL               _SETBITS
+   51 00000056                 SETBITS          GPIOBDEN, 0xC0 ; PB7, pb6 (2_11
+                                                            000000) ;Configure 
+                                                            used pins of Port B
+                                                             as digital
+   76 00000056 F04F 01C0       LDR              R1,=0xC0
+   77 0000005A 487A            LDR              R0,=GPIOBDEN
+   78 0000005C F7FF FFD0       BL               _SETBITS
+   52 00000060                 SETBITS          GPIOFDEN, 0x0E ; Configure pins
+                                                             1PF1, PF2 and PF3 
+                                                            for use (TIVA LAUNC
+                                                            HPAD RGB LED)
+   76 00000060 F04F 010E       LDR              R1,=0x0E
+   77 00000064 4878            LDR              R0,=GPIOFDEN
+   78 00000066 F7FF FFCB       BL               _SETBITS
+   53 0000006A                 SETBITS          GPIOADIR, 0XF0 ; PA7, PA6, PA5,
+                                                             PA4 (2_11110000) a
+                                                            s output
+   76 0000006A F04F 01F0       LDR              R1,=0XF0
+   77 0000006E 4877            LDR              R0,=GPIOADIR
+   78 00000070 F7FF FFC6       BL               _SETBITS
+   54 00000074                 SETBITS          GPIOBDIR, 0xC0 ; Enable PB7, pb
+                                                            6 (2_11000000) for 
+                                                            output
+   76 00000074 F04F 01C0       LDR              R1,=0xC0
+   77 00000078 4875            LDR              R0,=GPIOBDIR
+   78 0000007A F7FF FFC1       BL               _SETBITS
+   55 0000007E                 SETBITS          GPIOFDIR, 0x0E ; Configure PF1,
+                                                             PF2 and PF3 for OU
+                                                            TPUT (TIVA LAUNCHPA
+                                                            D RGB LED)
+   76 0000007E F04F 010E       LDR              R1,=0x0E
+   77 00000082 4874            LDR              R0,=GPIOFDIR
+   78 00000084 F7FF FFBC       BL               _SETBITS
+   56 00000088                 CLEARBITS        GPIOFDATA_RW, 0x0E ; Initialize
+                                                             pins PF1, PF2 and 
+                                                            PF3 as off  
+   83 00000088 F04F 010E       LDR              R1,=0x0E
+   84 0000008C 4872            LDR              R0,=GPIOFDATA_RW
+   85 0000008E F7FF FFC0       BL               _CLEARBITS
+   57 00000092         
+   58 00000092 E8BD 4FF0       POP              { R4-R11, LR } ; Pop back conte
+                                                            nts from the stack 
+                                                            onto the registers 
+                                                            they came from
+   59 00000096 4770            BX               LR          ; Return back to th
+                                                            e calling subroutin
+                                                            e.
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+   60 00000098         
+   61 00000098         
+   62 00000098         ;----------THIS IS WHERE WE NEED WORK DONE--------------
+                       ---------  
+   63 00000098         ; Subroutine: adc_initialization
+   64 00000098         ; Description: Initializes our ADC Module and Sequencer 
+                       so they are set up for analog input. 
+   65 00000098         
+   66 00000098         
+   67 00000098         SERIAL_INITIALIZATION
+   68 00000098 E92D 4FF0       PUSH             { R4-R11, LR } ; push preseverd
+                                                             registers and link
+                                                             register onto the 
+                                                            stack to save them
+   69 0000009C                 SETBITS          GPIOADEN, 0X3 ; Enable PA0 and 
+                                                            PA1 as digital port
+                                                            s (not analog) - al
+                                                            ready done, but dem
+                                                            onstrating how
+   76 0000009C F04F 0103       LDR              R1,=0X3
+   77 000000A0 4867            LDR              R0,=GPIOADEN
+   78 000000A2 F7FF FFAD       BL               _SETBITS
+   70 000000A6                 SETBITS          RCGCUART, 0X1 ; 3A- enable the 
+                                                            UART module 0 (UART
+                                                            0) using RCGCUART (
+                                                            pp 344)  
+   76 000000A6 F04F 0101       LDR              R1,=0X1
+   77 000000AA 486C            LDR              R0,=RCGCUART
+   78 000000AC F7FF FFA8       BL               _SETBITS
+   71 000000B0                 SETBITS          RCGCGPIO, 0X0 ; 3B- enable cloc
+                                                            k to GPIO module th
+                                                            rough RCGCGPIO (pp3
+                                                            40/1351)
+   76 000000B0 F04F 0100       LDR              R1,=0X0
+   77 000000B4 4861            LDR              R0,=RCGCGPIO
+   78 000000B6 F7FF FFA3       BL               _SETBITS
+   72 000000BA                 SETBITS          GPIOAAFSEL, 0X3 ; 3C- Set GPIO 
+                                                            Alternate function 
+                                                            select GPIOAFSEL (6
+                                                            71/1344) for both P
+                                                            A0 AND PA1
+   76 000000BA F04F 0103       LDR              R1,=0X3
+   77 000000BE 4868            LDR              R0,=GPIOAAFSEL
+   78 000000C0 F7FF FF9E       BL               _SETBITS
+   73 000000C4         ; No need to configure GPIO drive control or slew rate (
+                       Defaults to 2-Ma drive, which is fine)
+   74 000000C4         ; No need to configure PMCn fields in GPIOPCTL (Defualts
+                        to PA0/PA1, which is fine)
+   75 000000C4         SERIAL_CONFIGURATION
+   76 000000C4         ; EXAMPLE SPECIFIC TO 9600 BAUD/8BIT/1 STOP/NO PARITY/FI
+                       FO OFF/NO INTERRUPTS
+   77 000000C4                 CLEARBITS        UART0CTL, 0X1 ; 5A- DISABLE UAR
+                                                            T WHILE OPERATING--
+                                                             CLEAR UARTEN BIT (
+                                                            O) IN UARTCTL 
+   83 000000C4 F04F 0101       LDR              R1,=0X1
+   84 000000C8 4866            LDR              R0,=UART0CTL
+   85 000000CA F7FF FFA2       BL               _CLEARBITS
+   78 000000CE         ; NOTE** PLL IS SET TO 3, SO WE'RE WORKING WITH 48MHz.  
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+                       *
+   79 000000CE         ; SET BAUD-RATE-DIVISOR FOR BRD=48,000,000/(CLKDiv-16 or
+                        8)(9600)=III.FFFFF  
+   80 000000CE                 WRITEBITS        UART0IBRD, 312 ; 5B- (Set UART0
+                                                            IBRD=III)
+   69 000000CE 4866            LDR              R0, =UART0IBRD
+   70 000000D0 F44F 719C       MOV              R1, #312
+   71 000000D4 6001            STR              R1, [R0]
+   81 000000D6                 WRITEBITS        UART0FBRD, 32 ; 5C- Set UART0FB
+                                                            RD = INT(0.FFFFF*64
+                                                            +0.5) - FROM 0 TO 6
+                                                            4 for fraction
+   69 000000D6 4865            LDR              R0, =UART0FBRD
+   70 000000D8 F04F 0120       MOV              R1, #32
+   71 000000DC 6001            STR              R1, [R0]
+   82 000000DE                 WRITEBITS        UART0LCRH, 0x60 ; 5D- Select se
+                                                            rial com. parameter
+                                                            s in UARTLCRH (8 BI
+                                                            TS, the rest should
+                                                             be default)
+   69 000000DE 4864            LDR              R0, =UART0LCRH
+   70 000000E0 F04F 0160       MOV              R1, #0x60
+   71 000000E4 6001            STR              R1, [R0]
+   83 000000E6                 WRITEBITS        UART0CC, 0x0 ; 5E- Configure UA
+                                                            RT Clock source in 
+                                                            UART0CC (DEFAULT=0=
+                                                            SYSTEM CLOCK+DIVISO
+                                                            R)
+   69 000000E6 4863            LDR              R0, =UART0CC
+   70 000000E8 F04F 0100       MOV              R1, #0x0
+   71 000000EC 6001            STR              R1, [R0]
+   84 000000EE                 WRITEBITS        UART0CTL, 2_1100000001 ; 5F- En
+                                                            able UART0 for rece
+                                                            ive, Enable UART0 f
+                                                            or Transmit, Enable
+                                                             UART0 total
+   69 000000EE 485D            LDR              R0, =UART0CTL
+   70 000000F0 F240 3101       MOV              R1, #2_1100000001
+   71 000000F4 6001            STR              R1, [R0]
+   85 000000F6 E8BD 4FF0       POP              { R4-R11, LR } ; Pop back the p
+                                                            reserved registers 
+                                                            and link register t
+                                                            o what they were wh
+                                                            en we started SERIA
+                                                            L_INITIALIZATION
+   86 000000FA 4770            BX               LR          ; Return back to th
+                                                            e calling subroutin
+                                                            e.
+   87 000000FC         
+   88 000000FC         ;-------------------------------------------
+   89 000000FC         ; Subtroutine: _SEND
+   90 000000FC         ; checks for the output fifo to be clear, then sends low
+                       est 8 bits of R0
+   91 000000FC         
+   92 000000FC         _TRANSMIT
+   93 000000FC E92D 4FF0       PUSH             { R4-R11, LR } ; stack preserve
+                                                            d registers and lin
+                                                            k register
+   94 00000100         _WAIT_FOR_CLEAR_OUTPUT_FIFO
+
+
+
+ARM Macro Assembler    Page 9 
+
+
+   95 00000100 495D            LDR              R1, =UART0FR ; 6A1- Load the ad
+                                                            dress of the UART0 
+                                                            Flag register
+   96 00000102 680A            LDR              R2, [R1]    ; 6A2- Get the cont
+                                                            ents of the UART0 F
+                                                            lag register into a
+                                                             register we're not
+                                                             using
+   97 00000104 F012 0F20       TST              R2, #1<<5   ; 6B- Check the Tra
+                                                            nsmit FIFO0 Full bi
+                                                            t (TXFF) on that re
+                                                            gister with a TST (
+                                                            single bit ANDS)
+   98 00000108 D1FA            BNE              _WAIT_FOR_CLEAR_OUTPUT_FIFO ; 6
+                                                            B1- If the Transmit
+                                                             FIFO0 IS full, go 
+                                                            back to _WAIT_FOR_C
+                                                            LEAR_OUTPUT_FIFO
+   99 0000010A F000 00FF       AND              R0, #0XFF   ; 6C- Mask out all 
+                                                            but the lowest 8 bi
+                                                            ts for sending from
+                                                             R0
+  100 0000010E 4E5B            LDR              R6, =UART0DR ; 6D1- Place the d
+                                                            ata in R0 into the 
+                                                            UART0Data Register 
+                                                            (UART0DR)
+  101 00000110 6030            STR              R0, [R6]    ; 6D2- (two lines)
+  102 00000112 E8BD 4FF0       POP              { R4-R11, LR } ; Pop back the p
+                                                            reserved registers 
+                                                            and link register
+  103 00000116 4770            BX               LR          ; Return back to th
+                                                            e calling subroutin
+                                                            e.
+  104 00000118         
+  105 00000118         _RECEIVE
+  106 00000118 E92D 4FF0       PUSH             { R4-R11, LR }
+  107 0000011C         _WAIT_FOR_RECEIVE_OUTPUT_FIFO
+  108 0000011C 4956            LDR              R1, =UART0FR ; Load the address
+                                                             of the UART0 Flag 
+                                                            register
+  109 0000011E 680A            LDR              R2, [R1]    ; Get the contents 
+                                                            of the UART0 Flag r
+                                                            egister into a regi
+                                                            ster we're not usin
+                                                            g
+  110 00000120 F012 0F10       TST              R2, #1<<4   ; Check the Transmi
+                                                            t FIFOO Empty bit (
+                                                            RXFE) on that regis
+                                                            ter with a TST (sin
+                                                            gle bit ANDS)
+  111 00000124 D1FA            BNE              _WAIT_FOR_RECEIVE_OUTPUT_FIFO
+  112 00000126 4855            LDR              R0, =UART0DR ; Place the data i
+                                                            n R0 into the UART0
+                                                            Data Register (UART
+                                                            0DR)
+  113 00000128 6800            LDR              R0, [R0]
+  114 0000012A F000 00FF       AND              R0, #0XFF   ; Mask out all but 
+                                                            the lowest 8 bits f
+                                                            or sending from R0
+
+
+
+ARM Macro Assembler    Page 10 
+
+
+  115 0000012E E8BD 4FF0       POP              { R4-R11, LR } ; Pop back the p
+                                                            reserved registers 
+                                                            and link register
+  116 00000132 4770            BX               LR          ; Return back to th
+                                                            e calling subroutin
+                                                            e.
+  117 00000134         
+  118 00000134         
+  119 00000134         ;-------------------------------------------
+  120 00000134         _QUICKSEND
+  121 00000134 E92D 4FF0       PUSH             { R4-R11, LR}
+  122 00000138                 TRANSMIT8BITS    'Y'
+   63 00000138 F04F 0059       MOV              R0,#'Y'
+   64 0000013C F7FF FFDE       BL               _TRANSMIT
+  123 00000140                 TRANSMIT8BITS    'o'
+   63 00000140 F04F 006F       MOV              R0,#'o'
+   64 00000144 F7FF FFDA       BL               _TRANSMIT
+  124 00000148                 TRANSMIT8BITS    'u'
+   63 00000148 F04F 0075       MOV              R0,#'u'
+   64 0000014C F7FF FFD6       BL               _TRANSMIT
+  125 00000150                 TRANSMIT8BITS    ' '
+   63 00000150 F04F 0020       MOV              R0,#' '
+   64 00000154 F7FF FFD2       BL               _TRANSMIT
+  126 00000158                 TRANSMIT8BITS    'p'
+   63 00000158 F04F 0070       MOV              R0,#'p'
+   64 0000015C F7FF FFCE       BL               _TRANSMIT
+  127 00000160                 TRANSMIT8BITS    'r'
+   63 00000160 F04F 0072       MOV              R0,#'r'
+   64 00000164 F7FF FFCA       BL               _TRANSMIT
+  128 00000168                 TRANSMIT8BITS    'e'
+   63 00000168 F04F 0065       MOV              R0,#'e'
+   64 0000016C F7FF FFC6       BL               _TRANSMIT
+  129 00000170                 TRANSMIT8BITS    's'
+   63 00000170 F04F 0073       MOV              R0,#'s'
+   64 00000174 F7FF FFC2       BL               _TRANSMIT
+  130 00000178                 TRANSMIT8BITS    's'
+   63 00000178 F04F 0073       MOV              R0,#'s'
+   64 0000017C F7FF FFBE       BL               _TRANSMIT
+  131 00000180                 TRANSMIT8BITS    'e'
+   63 00000180 F04F 0065       MOV              R0,#'e'
+   64 00000184 F7FF FFBA       BL               _TRANSMIT
+  132 00000188                 TRANSMIT8BITS    'd'
+   63 00000188 F04F 0064       MOV              R0,#'d'
+   64 0000018C F7FF FFB6       BL               _TRANSMIT
+  133 00000190                 TRANSMIT8BITS    ' '
+   63 00000190 F04F 0020       MOV              R0,#' '
+   64 00000194 F7FF FFB2       BL               _TRANSMIT
+  134 00000198                 TRANSMIT8BITS    't'
+   63 00000198 F04F 0074       MOV              R0,#'t'
+   64 0000019C F7FF FFAE       BL               _TRANSMIT
+  135 000001A0                 TRANSMIT8BITS    'h'
+   63 000001A0 F04F 0068       MOV              R0,#'h'
+   64 000001A4 F7FF FFAA       BL               _TRANSMIT
+  136 000001A8                 TRANSMIT8BITS    'e'
+   63 000001A8 F04F 0065       MOV              R0,#'e'
+   64 000001AC F7FF FFA6       BL               _TRANSMIT
+  137 000001B0                 TRANSMIT8BITS    ' '
+   63 000001B0 F04F 0020       MOV              R0,#' '
+   64 000001B4 F7FF FFA2       BL               _TRANSMIT
+
+
+
+ARM Macro Assembler    Page 11 
+
+
+  138 000001B8                 TRANSMIT8BITS    'l'
+   63 000001B8 F04F 006C       MOV              R0,#'l'
+   64 000001BC F7FF FF9E       BL               _TRANSMIT
+  139 000001C0                 TRANSMIT8BITS    'e'
+   63 000001C0 F04F 0065       MOV              R0,#'e'
+   64 000001C4 F7FF FF9A       BL               _TRANSMIT
+  140 000001C8                 TRANSMIT8BITS    't'
+   63 000001C8 F04F 0074       MOV              R0,#'t'
+   64 000001CC F7FF FF96       BL               _TRANSMIT
+  141 000001D0                 TRANSMIT8BITS    't'
+   63 000001D0 F04F 0074       MOV              R0,#'t'
+   64 000001D4 F7FF FF92       BL               _TRANSMIT
+  142 000001D8                 TRANSMIT8BITS    'e'
+   63 000001D8 F04F 0065       MOV              R0,#'e'
+   64 000001DC F7FF FF8E       BL               _TRANSMIT
+  143 000001E0                 TRANSMIT8BITS    'r'
+   63 000001E0 F04F 0072       MOV              R0,#'r'
+   64 000001E4 F7FF FF8A       BL               _TRANSMIT
+  144 000001E8                 TRANSMIT8BITS    ' '
+   63 000001E8 F04F 0020       MOV              R0,#' '
+   64 000001EC F7FF FF86       BL               _TRANSMIT
+  145 000001F0                 TRANSMIT8BITS    '''
+   63 000001F0 F04F 0027       MOV              R0,#'''
+   64 000001F4 F7FF FF82       BL               _TRANSMIT
+  146 000001F8                 TRANSMIT8BITS    'A'
+   63 000001F8 F04F 0041       MOV              R0,#'A'
+   64 000001FC F7FF FF7E       BL               _TRANSMIT
+  147 00000200                 TRANSMIT8BITS    '''
+   63 00000200 F04F 0027       MOV              R0,#'''
+   64 00000204 F7FF FF7A       BL               _TRANSMIT
+  148 00000208                 TRANSMIT8BITS    13
+   63 00000208 F04F 000D       MOV              R0,#13
+   64 0000020C F7FF FF76       BL               _TRANSMIT
+  149 00000210                 TRANSMIT8BITS    12
+   63 00000210 F04F 000C       MOV              R0,#12
+   64 00000214 F7FF FF72       BL               _TRANSMIT
+  150 00000218 E8BD 4FF0       POP              { R4-R11, LR}
+  151 0000021C 4770            BX               LR
+  152 0000021E         
+  153 0000021E         
+  154 0000021E         ;==================LOGIC==========================;
+  155 0000021E         
+  156 0000021E         __main
+  157 0000021E         
+  158 0000021E         _INITIALIZATION_ROUTINES
+  159 0000021E F7FF FF0E       BL               output_input_pins_config
+  160 00000222 F7FF FF39       BL               SERIAL_INITIALIZATION
+  161 00000226         
+  162 00000226         _RUNLOOP                             ; MADE UP OF READ-S
+                                                            END-RECEIVE SECTION
+                                                            S
+  163 00000226 F7FF FF77       BL               _RECEIVE
+  164 0000022A 2841            CMP              R0, #'A'
+  165 0000022C 2861            CMP              R0, #'a'
+  166 0000022E BF08 F7FF 
+              FF80             BLEQ             _QUICKSEND
+  167 00000234         
+  168 00000234         _LOOP_END
+  169 00000234                 DLAY             1000000
+
+
+
+ARM Macro Assembler    Page 12 
+
+
+   90 00000234 4812            LDR              R0,=1000000
+   91 00000236 F7FF FEF7       BL               _DELAY
+  170 0000023A E7F4            B                _RUNLOOP
+  171 0000023C         
+  172 0000023C                 END
+              400FE608 
+              4000451C 
+              4000551C 
+              4002551C 
+              40004400 
+              40005400 
+              40025400 
+              400253FC 
+              400FE618 
+              40004420 
+              4000C030 
+              4000C024 
+              4000C028 
+              4000C02C 
+              4000CFC8 
+              4000C018 
+              4000C000 
+              000F4240 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\rx_main.d -o.\objects\rx_main.o -I.\RTE\_Target_1 -I"
+C:\Program Files (x86)\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include" -I"
+C:\Program Files (x86)\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C
+123" --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 526" --pre
+define="_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --list=.\listings\rx_ma
+in.lst rx_main.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 1 in file rx_data.s
+   Uses
+      None
+Comment: DATA unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+LOOPDELAY 0000002E
+
+Symbol: LOOPDELAY
+   Definitions
+      At line 35 in file rx_main.s
+   Uses
+      At line 38 in file rx_main.s
+Comment: LOOPDELAY used once
+Main 00000000
+
+Symbol: Main
+   Definitions
+      At line 10 in file rx_main.s
+   Uses
+      None
+Comment: Main unused
+SERIAL_CONFIGURATION 000000C4
+
+Symbol: SERIAL_CONFIGURATION
+   Definitions
+      At line 75 in file rx_main.s
+   Uses
+      None
+Comment: SERIAL_CONFIGURATION unused
+SERIAL_INITIALIZATION 00000098
+
+Symbol: SERIAL_INITIALIZATION
+   Definitions
+      At line 67 in file rx_main.s
+   Uses
+      At line 160 in file rx_main.s
+Comment: SERIAL_INITIALIZATION used once
+_CLEARBITS 00000012
+
+Symbol: _CLEARBITS
+   Definitions
+      At line 23 in file rx_main.s
+   Uses
+      At line 85 in macro CLEARBITS
+      at line 56 in file rx_main.s
+Comment: _CLEARBITS used once
+_DELAY 00000028
+
+Symbol: _DELAY
+   Definitions
+      At line 32 in file rx_main.s
+   Uses
+      At line 91 in macro DLAY
+      at line 169 in file rx_main.s
+Comment: _DELAY used once
+_INITIALIZATION_ROUTINES 0000021E
+
+Symbol: _INITIALIZATION_ROUTINES
+   Definitions
+      At line 158 in file rx_main.s
+   Uses
+      None
+Comment: _INITIALIZATION_ROUTINES unused
+_LOOP_END 00000234
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+
+Symbol: _LOOP_END
+   Definitions
+      At line 168 in file rx_main.s
+   Uses
+      None
+Comment: _LOOP_END unused
+_QUICKSEND 00000134
+
+Symbol: _QUICKSEND
+   Definitions
+      At line 120 in file rx_main.s
+   Uses
+      At line 166 in file rx_main.s
+Comment: _QUICKSEND used once
+_RECEIVE 00000118
+
+Symbol: _RECEIVE
+   Definitions
+      At line 105 in file rx_main.s
+   Uses
+      At line 163 in file rx_main.s
+Comment: _RECEIVE used once
+_RUNLOOP 00000226
+
+Symbol: _RUNLOOP
+   Definitions
+      At line 162 in file rx_main.s
+   Uses
+      At line 170 in file rx_main.s
+Comment: _RUNLOOP used once
+_SETBITS 00000000
+
+Symbol: _SETBITS
+   Definitions
+      At line 15 in file rx_main.s
+   Uses
+      At line 78 in macro SETBITS
+      at line 49 in file rx_main.s
+Comment: _SETBITS used once
+_TRANSMIT 000000FC
+
+Symbol: _TRANSMIT
+   Definitions
+      At line 92 in file rx_main.s
+   Uses
+      At line 64 in macro TRANSMIT8BITS
+      at line 122 in file rx_main.s
+Comment: _TRANSMIT used once
+_WAIT_FOR_CLEAR_OUTPUT_FIFO 00000100
+
+Symbol: _WAIT_FOR_CLEAR_OUTPUT_FIFO
+   Definitions
+      At line 94 in file rx_main.s
+   Uses
+      At line 98 in file rx_main.s
+Comment: _WAIT_FOR_CLEAR_OUTPUT_FIFO used once
+_WAIT_FOR_RECEIVE_OUTPUT_FIFO 0000011C
+
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: _WAIT_FOR_RECEIVE_OUTPUT_FIFO
+   Definitions
+      At line 107 in file rx_main.s
+   Uses
+      At line 111 in file rx_main.s
+Comment: _WAIT_FOR_RECEIVE_OUTPUT_FIFO used once
+__main 0000021E
+
+Symbol: __main
+   Definitions
+      At line 156 in file rx_main.s
+   Uses
+      At line 9 in file rx_main.s
+Comment: __main used once
+output_input_pins_config 0000003E
+
+Symbol: output_input_pins_config
+   Definitions
+      At line 46 in file rx_main.s
+   Uses
+      At line 159 in file rx_main.s
+Comment: output_input_pins_config used once
+17 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+ADCACTSS 40038000
+
+Symbol: ADCACTSS
+   Definitions
+      At line 47 in file rx_data.s
+   Uses
+      None
+Comment: ADCACTSS unused
+ADCEMUX 40038014
+
+Symbol: ADCEMUX
+   Definitions
+      At line 48 in file rx_data.s
+   Uses
+      None
+Comment: ADCEMUX unused
+ADCISC 4003800C
+
+Symbol: ADCISC
+   Definitions
+      At line 53 in file rx_data.s
+   Uses
+      None
+Comment: ADCISC unused
+ADCPC 40038FC4
+
+Symbol: ADCPC
+   Definitions
+      At line 46 in file rx_data.s
+   Uses
+      None
+Comment: ADCPC unused
+ADCRIS 40038004
+
+Symbol: ADCRIS
+   Definitions
+      At line 51 in file rx_data.s
+   Uses
+      None
+Comment: ADCRIS unused
+ADCSSCTL0 40038044
+
+Symbol: ADCSSCTL0
+   Definitions
+      At line 50 in file rx_data.s
+   Uses
+      None
+Comment: ADCSSCTL0 unused
+ADCSSFIFO0 40038048
+
+Symbol: ADCSSFIFO0
+   Definitions
+      At line 52 in file rx_data.s
+   Uses
+      None
+Comment: ADCSSFIFO0 unused
+ADCSSMUX0 40038040
+
+Symbol: ADCSSMUX0
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 49 in file rx_data.s
+   Uses
+      None
+Comment: ADCSSMUX0 unused
+COUNT1 00D00000
+
+Symbol: COUNT1
+   Definitions
+      At line 57 in file rx_data.s
+   Uses
+      None
+Comment: COUNT1 unused
+GPIOAAFSEL 40004420
+
+Symbol: GPIOAAFSEL
+   Definitions
+      At line 11 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 72 in file rx_main.s
+Comment: GPIOAAFSEL used once
+GPIOADATA_RW 400043FC
+
+Symbol: GPIOADATA_RW
+   Definitions
+      At line 7 in file rx_data.s
+   Uses
+      None
+Comment: GPIOADATA_RW unused
+GPIOADEN 4000451C
+
+Symbol: GPIOADEN
+   Definitions
+      At line 9 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 50 in file rx_main.s
+Comment: GPIOADEN used once
+GPIOADIR 40004400
+
+Symbol: GPIOADIR
+   Definitions
+      At line 8 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 53 in file rx_main.s
+Comment: GPIOADIR used once
+GPIOAPCTL 4000452C
+
+Symbol: GPIOAPCTL
+   Definitions
+      At line 12 in file rx_data.s
+   Uses
+      None
+Comment: GPIOAPCTL unused
+GPIOBAFSEL 40005420
+
+Symbol: GPIOBAFSEL
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 18 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBAFSEL unused
+GPIOBDATA_RW 400053FC
+
+Symbol: GPIOBDATA_RW
+   Definitions
+      At line 14 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBDATA_RW unused
+GPIOBDEN 4000551C
+
+Symbol: GPIOBDEN
+   Definitions
+      At line 16 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 51 in file rx_main.s
+Comment: GPIOBDEN used once
+GPIOBDIR 40005400
+
+Symbol: GPIOBDIR
+   Definitions
+      At line 15 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 54 in file rx_main.s
+Comment: GPIOBDIR used once
+GPIOBPCTL 4000552C
+
+Symbol: GPIOBPCTL
+   Definitions
+      At line 19 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBPCTL unused
+GPIOEAMSEL 40024528
+
+Symbol: GPIOEAMSEL
+   Definitions
+      At line 42 in file rx_data.s
+   Uses
+      None
+Comment: GPIOEAMSEL unused
+GPIOFDATA_RW 400253FC
+
+Symbol: GPIOFDATA_RW
+   Definitions
+      At line 22 in file rx_data.s
+   Uses
+      At line 84 in macro CLEARBITS
+      at line 56 in file rx_main.s
+Comment: GPIOFDATA_RW used once
+GPIOFDEN 4002551C
+
+Symbol: GPIOFDEN
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 24 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 52 in file rx_main.s
+Comment: GPIOFDEN used once
+GPIOFDIR 40025400
+
+Symbol: GPIOFDIR
+   Definitions
+      At line 23 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 55 in file rx_main.s
+Comment: GPIOFDIR used once
+RCGCADC 400FE638
+
+Symbol: RCGCADC
+   Definitions
+      At line 45 in file rx_data.s
+   Uses
+      None
+Comment: RCGCADC unused
+RCGCGPIO 400FE608
+
+Symbol: RCGCGPIO
+   Definitions
+      At line 3 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 49 in file rx_main.s
+Comment: RCGCGPIO used once
+RCGCUART 400FE618
+
+Symbol: RCGCUART
+   Definitions
+      At line 28 in file rx_data.s
+   Uses
+      At line 77 in macro SETBITS
+      at line 70 in file rx_main.s
+Comment: RCGCUART used once
+UART0 4000C000
+
+Symbol: UART0
+   Definitions
+      At line 31 in file rx_data.s
+   Uses
+      At line 32 in file rx_data.s
+      At line 33 in file rx_data.s
+      At line 34 in file rx_data.s
+      At line 35 in file rx_data.s
+      At line 36 in file rx_data.s
+      At line 37 in file rx_data.s
+      At line 38 in file rx_data.s
+
+UART0CC 4000CFC8
+
+Symbol: UART0CC
+   Definitions
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 38 in file rx_data.s
+   Uses
+      At line 69 in macro WRITEBITS
+      at line 83 in file rx_main.s
+Comment: UART0CC used once
+UART0CTL 4000C030
+
+Symbol: UART0CTL
+   Definitions
+      At line 37 in file rx_data.s
+   Uses
+      At line 84 in macro CLEARBITS
+      at line 77 in file rx_main.s
+      At line 69 in macro WRITEBITS
+      at line 84 in file rx_main.s
+
+UART0DR 4000C000
+
+Symbol: UART0DR
+   Definitions
+      At line 32 in file rx_data.s
+   Uses
+      At line 100 in file rx_main.s
+      At line 112 in file rx_main.s
+
+UART0FBRD 4000C028
+
+Symbol: UART0FBRD
+   Definitions
+      At line 35 in file rx_data.s
+   Uses
+      At line 69 in macro WRITEBITS
+      at line 81 in file rx_main.s
+Comment: UART0FBRD used once
+UART0FR 4000C018
+
+Symbol: UART0FR
+   Definitions
+      At line 33 in file rx_data.s
+   Uses
+      At line 95 in file rx_main.s
+      At line 108 in file rx_main.s
+
+UART0IBRD 4000C024
+
+Symbol: UART0IBRD
+   Definitions
+      At line 34 in file rx_data.s
+   Uses
+      At line 69 in macro WRITEBITS
+      at line 80 in file rx_main.s
+Comment: UART0IBRD used once
+UART0LCRH 4000C02C
+
+Symbol: UART0LCRH
+   Definitions
+      At line 36 in file rx_data.s
+   Uses
+      At line 69 in macro WRITEBITS
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+Absolute symbols
+
+      at line 82 in file rx_main.s
+Comment: UART0LCRH used once
+34 symbols
+389 symbols in table

@@ -1,0 +1,1386 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; CS 100 Lab 9
+    2 00000000         ; Due Date:
+    3 00000000         ; Student Name: 
+    4 00000000         ; Section: 
+    5 00000000         
+    6 00000000         ; Title: "Lab9_Main"
+    7 00000000         ; © 2021 DigiPen, All Rights Reserved.
+    8 00000000         
+    9 00000000                 GET              Lab9_Data.s ; Get/include the d
+                                                            ata file
+    1 00000000                 AREA             DATA, CODE, READONLY
+    2 00000000         
+    3 00000000 400FE608 
+                       RCGCGPIO
+                               EQU              0X400FE608  ;Address of GPIO Mo
+                                                            dule clock/power, i
+                                                            t ACTIVATES PORTS..
+                                                            .
+    4 00000000         ; ...bit 0 = port A, bit 1 = port B, ... and bit 5 = por
+                       t F
+    5 00000000         
+    6 00000000         ; LEDs should be connected to PB0,PB1,PB2,PB3,PB4,PB5,PB
+                       6, and PB7 in a circle, clockwise from top being PB0.
+    7 00000000         ; ( 0 up, 1 up/right, 2 right, 3 down/right, 4 down, 5 d
+                       own/left, 6 left, 7 up/left)
+    8 00000000         
+    9 00000000         ;Port A had our UART connections.  Some elements are com
+                       mented out and incomplete.  If you finished lab7, then y
+                       ou can use that data.
+   10 00000000 400043FC 
+                       GPIOADATA_RW
+                               EQU              0X400043FC  ; Address of Port A
+                                                             (DATA)of our micro
+                                                            controller (buttons
+                                                            )
+   11 00000000 40004400 
+                       GPIOADIR
+                               EQU              0x40004400  ; Address of Port A
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+   12 00000000 4000451C 
+                       GPIOADEN
+                               EQU              0X4000451C  ; Address of Port A
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   13 00000000 40004420 
+                       GPIOAAFSEL
+                               EQU              0X40004420  ; Address of Port A
+                                                             (alternate functio
+                                                            n select) of our mi
+                                                            crocontroller port 
+                                                            a
+   14 00000000 4000452C 
+                       GPIOAPCTL
+                               EQU              0X4000452C  ; Which alternate f
+                                                            unctions are on Por
+                                                            t A
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   15 00000000         
+   16 00000000         ; We are using all of port B for LED output
+   17 00000000 400053FC 
+                       GPIOBDATA_RW
+                               EQU              0X400053FC  ; Address of Port B
+                                                             (DATA)of our micro
+                                                            controller (LEDs)
+   18 00000000 40005400 
+                       GPIOBDIR
+                               EQU              0x40005400  ; Address of Port B
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+   19 00000000 4000551C 
+                       GPIOBDEN
+                               EQU              0X4000551C  ; Address of Port B
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   20 00000000         
+   21 00000000         ; Port E we will use for the ADC inputs
+   22 00000000 400243FC 
+                       GPIOEDATA_RW
+                               EQU              0X400243FC  ; Address of Port E
+                                                             (DATA)of our micro
+                                                            controller (LEDs)
+   23 00000000 40024400 
+                       GPIOEDIR
+                               EQU              0x40024400  ; Address of Port E
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+   24 00000000 4002451C 
+                       GPIOEDEN
+                               EQU              0X4002451C  ; Address of Port E
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   25 00000000         
+   26 00000000         ;PORT F - TIVABOARD USES PORT F, PINS PF1,PF2, AND PF3 F
+                       OR THE ONBOARD RGB LED
+   27 00000000 400253FC 
+                       GPIOFDATA_RW
+                               EQU              0X400253FC  ; ADDRESS OF PORT F
+                                                             PINS - DATA REGIST
+                                                            ER
+   28 00000000 40025400 
+                       GPIOFDIR
+                               EQU              0X40025400  ; ADDRESS OF PORT F
+                                                             - DIRECTION
+   29 00000000 4002551C 
+                       GPIOFDEN
+                               EQU              0X4002551C  ; ADDRESS OF PORT F
+                                                             PINS - DIGITAL ENA
+                                                            BLE
+   30 00000000         
+   31 00000000         ; Y-Axis Joystick should be connected to PE0 and X-Axis 
+                       to PE1
+   32 00000000         
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   33 00000000         ;ADC General Settings
+   34 00000000 400FE638 
+                       RCGCADC EQU              0X400FE638  ;******Step 2A*****
+                                                            * Power control for
+                                                             ADCs 
+   35 00000000         ; ...Enables ADC Module, PROVIDES A CLOCK  Bit 0 = MODUL
+                       E 0 Bit 1 = MODULE 1  
+   36 00000000         
+   37 00000000         ;ADC analog mode select Settings for Port E 
+   38 00000000 40024528 
+                       GPIOEAMSEL
+                               EQU              0x40024528  ;*****Step 2C******
+                                                            * Address of Port E
+                                                             (ANALOG SETTING) o
+                                                            f our microcontroll
+                                                            er
+   39 00000000 40024420 
+                       GPIOEAFSEL
+                               EQU              0x40024420  ; Not needed for pu
+                                                            rely analog port E
+   40 00000000         
+   41 00000000         ; ...Enables ADC Module, PROVIDES A CLOCK  Bit 0 = MODUL
+                       E 0 Bit 1 = MODULE 1  
+   42 00000000 40038FC4 
+                       ADCPC   EQU              0X40038FC4  ; Select ADC Speed 
+                                                            1-125KSPS, 3-250KSP
+                                                            S, 5-500KSPS, 7 - 1
+                                                            MSPS
+   43 00000000 40038000 
+                       ADCACTSS
+                               EQU              0X40038000  ; Address to enable
+                                                             and disable the AD
+                                                            C Sequencer (Seq 0 
+                                                            = Bit 0) ;;(BIT 0-3
+                                                             SEQ 0 -3) BIT 16 -
+                                                             (0 IDLE) (1 BUSY) 
+                                                            
+   44 00000000 40038014 
+                       ADCEMUX EQU              0X40038014  ; Select which even
+                                                            t triggers the samp
+                                                            le sequencer (Seq 0
+                                                             bits(0- 3) 0XF = A
+                                                            LWAYS)
+   45 00000000 40038040 
+                       ADCSSMUX0
+                               EQU              0X40038040  ; Select which ADC 
+                                                            channels will the s
+                                                            equencer 0 read (AI
+                                                            N3 = PE0, AIN2 = PE
+                                                            1)
+   46 00000000 40038044 
+                       ADCSSCTL0
+                               EQU              0X40038044  ; Address to config
+                                                            ure the sample cont
+                                                            rol bits (interrupt
+                                                            ion and end of sequ
+                                                            encer) 
+   47 00000000 40038004 
+                       ADCRIS  EQU              0X40038004  ; Registers with th
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+                                                            e flags for "done" 
+                                                            bits 
+   48 00000000 40038048 
+                       ADCSSFIFO0
+                               EQU              0X40038048  ; DATA (BITS 0-11)
+   49 00000000 4003800C 
+                       ADCISC  EQU              0X4003800C  ; Register that cle
+                                                            ars the ADCRIS flag
+                                                            s
+   50 00000000 40038028 
+                       ADCPSSI EQU              0X40038028  ; ADC Sample Sequen
+                                                            cer Processor-Initi
+                                                            ate (bit 0 is Seque
+                                                            ncer 0)
+   51 00000000 40038030 
+                       ADCSAC  EQU              0X40038030  ; ADC Sample Averag
+                                                            ing Control-- 2^ADC
+                                                            SAC samples are ave
+                                                            raged for result (A
+                                                            DCSAC<7)
+   52 00000000         
+   53 00000000         ;constants 
+   54 00000000 000000FE 
+                       THRESH_LOW
+                               EQU              0x0FE       ; lower threshold f
+                                                            or axial ADC value
+   55 00000000 00000DF0 
+                       THRESH_HIGH
+                               EQU              0xDF0       ; higher threshold 
+                                                            for axial ADC value
+                                                            
+   56 00000000         
+   57 00000000         ; values representing bits to set for activating positio
+                       nal LED's
+   58 00000000 00000001 
+                       LED_UP  EQU              1<<0
+   59 00000000 00000004 
+                       LED_RIGHT
+                               EQU              1<<2
+   60 00000000 00000010 
+                       LED_DOWN
+                               EQU              1<<4
+   61 00000000 00000040 
+                       LED_LEFT
+                               EQU              1<<6
+   62 00000000         
+   63 00000000         
+   64 00000000         ; macros
+   65 00000000                 MACRO
+   66 00000000                 TRANSMIT8BITS    $BITS_TO_TRANSMIT
+   67 00000000                 MOV              R0,#$BITS_TO_TRANSMIT
+   68 00000000                 BL               _TRANSMIT
+   69 00000000                 MEND
+   70 00000000         
+   71 00000000                 MACRO
+   72 00000000                 WRITEBITS        $addr, $data
+   73 00000000                 LDR              R0, =$addr
+   74 00000000                 MOV              R1, #$data
+   75 00000000                 STR              R1, [R0]
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+   76 00000000                 MEND
+   77 00000000         
+   78 00000000                 MACRO
+   79 00000000                 SETBITS          $ADDRESS, $BITS
+   80 00000000                 LDR              R1,=$BITS
+   81 00000000                 LDR              R0,=$ADDRESS
+   82 00000000                 BL               _SETBITS
+   83 00000000                 MEND
+   84 00000000         
+   85 00000000                 MACRO
+   86 00000000                 CLEARBITS        $ADDRESS, $BITS
+   87 00000000                 LDR              R1,=$BITS
+   88 00000000                 LDR              R0,=$ADDRESS
+   89 00000000                 BL               _CLEARBITS
+   90 00000000                 MEND
+   91 00000000         
+   92 00000000                 MACRO
+   93 00000000                 DLAY             $DELAYLOOPCOUNT
+   94 00000000                 LDR              R0,=$DELAYLOOPCOUNT
+   95 00000000                 BL               _DELAY
+   96 00000000                 MEND
+   97 00000000         
+   98 00000000                 END
+   10 00000000                 GLOBAL           __main      ; Global main funct
+                                                            ion
+   11 00000000                 AREA             Lab9_Main, CODE, READONLY ; Are
+                                                            a of code that is r
+                                                            ead only
+   12 00000000                 ALIGN            2           ; Align the data bo
+                                                            undary to a multipl
+                                                            e of 2
+   13 00000000                 ENTRY                        ; Entry into the co
+                                                            de segment
+   14 00000000         
+   15 00000000         ;======Bit Methods-Nothing-new-here===================;
+   16 00000000         ;---------------------------------  
+   17 00000000         ; _SETBITS: Sets bits in memory (passing "1001" in R1 wi
+                       ll set bits at position 0 and 3 in R0)
+   18 00000000         _SETBITS                             ; Turn on bits at a
+                                                            ddress R0 specified
+                                                             by 1's in R1 
+   19 00000000 E92D 4FF0       PUSH             {R4-R11, LR}
+   20 00000004 6804            LDR              R4, [R0]
+   21 00000006 EA44 0401       ORR              R4, R1
+   22 0000000A 6004            STR              R4, [R0]
+   23 0000000C E8BD 4FF0       POP              {R4-R11, LR}
+   24 00000010 4770            BX               LR
+   25 00000012         
+   26 00000012         ;--------------------------------- 
+   27 00000012         ; _CLEARBITS: Clears bits in memory (passing "1001" in R
+                       1 will clear bits at position 0 and 3 in R0)
+   28 00000012         _CLEARBITS                           ; Turn off bits at 
+                                                            address R0 specifie
+                                                            d by 1's in R1
+   29 00000012 E92D 4FF0       PUSH             {R4-R11, LR}
+   30 00000016 6804            LDR              R4, [R0]
+   31 00000018 EA6F 0301       MVN              R3, R1
+   32 0000001C EA04 0403       AND              R4, R3
+   33 00000020 6004            STR              R4, [R0]
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+   34 00000022 E8BD 4FF0       POP              {R4-R11, LR}
+   35 00000026 4770            BX               LR
+   36 00000028         ;----------------------------------
+   37 00000028         _DELAY                               ; Loop R0 times
+   38 00000028 E92D 4FF0       PUSH             {R4-R11, LR}
+   39 0000002C 4682            MOV              R10, R0
+   40 0000002E         LOOPDELAY
+   41 0000002E F1BA 0A01       SUBS             R10, R10, #1
+   42 00000032 F1BA 0F00       CMP              R10, #0
+   43 00000036 D1FA            BNE              LOOPDELAY
+   44 00000038 E8BD 4FF0       POP              {R4-R11, LR}
+   45 0000003C 4770            BX               LR
+   46 0000003E         
+   47 0000003E         ;====================ADC Subroutines====================
+                       ===;
+   48 0000003E         ;---------------------------------  
+   49 0000003E         ; Loops until ADC value is ready to be read
+   50 0000003E         ; Inputs: R0 = address of value to read
+   51 0000003E         ; Outputs: None
+   52 0000003E         _wait_adc
+   53 0000003E E92D 4FF0       PUSH             {LR, R4-R11}
+   54 00000042         _wait_for_adc_loop                   ; don't keep pushin
+                                                            g registers.
+   55 00000042         ; STUDENT CODE HERE ****SUBROUTINE STEP A****
+   56 00000042 6804            LDR              R4, [R0]
+   57 00000044 3C01            SUBS             R4, #2_1
+   58 00000046 D1FC            BNE              _wait_for_adc_loop
+   59 00000048         ; END STUDENT CODE
+   60 00000048 E8BD 4FF0       POP              {LR, R4-R11}
+   61 0000004C 4770            BX               LR
+   62 0000004E         
+   63 0000004E         
+   64 0000004E         ;---------------------------------  
+   65 0000004E         ; Reads the last 3 nibbles of the register.
+   66 0000004E         ; Inputs: R0 = address of value to read
+   67 0000004E         ; Outputs: Masked result of ADC in R0
+   68 0000004E         _read_adc
+   69 0000004E E92D 4FF0       PUSH             {LR, R4-R11}
+   70 00000052         ; STUDENT CODE HERE ****SUBROUTINE STEP B****
+   71 00000052 6804            LDR              R4, [R0]
+   72 00000054 F640 75FF       LDR              R5, =0xFFF
+   73 00000058 EA04 0405       AND              R4, R5
+   74 0000005C 4620            MOV              R0, R4
+   75 0000005E         
+   76 0000005E         
+   77 0000005E         ; END STUDENT CODE
+   78 0000005E E8BD 4FF0       POP              {LR, R4-R11}
+   79 00000062 4770            BX               LR
+   80 00000064         
+   81 00000064         
+   82 00000064         ;====================SETUP=======================;
+   83 00000064         ;---------------------------------  
+   84 00000064         ; Subroutine: ports_activation 
+   85 00000064         ; Description: Initializes output Ports so they are set 
+                       up for use. If we don't
+   86 00000064         ;   do this, the pin won't work. 
+   87 00000064         
+   88 00000064         _led_pins_activation
+   89 00000064 E92D 4FF0       PUSH             { R4-R11, LR } ; stack preserve
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+                                                            d registers and lin
+                                                            k register
+   90 00000068         
+   91 00000068                 SETBITS          RCGCGPIO, 2_10011 ; A(1), B(2),
+                                                             C(4), D(8), E(10),
+                                                             F(20), we're only 
+                                                            turning on ports A+
+                                                            B+E
+   80 00000068 F04F 0113       LDR              R1,=2_10011
+   81 0000006C 4873            LDR              R0,=RCGCGPIO
+   82 0000006E F7FF FFC7       BL               _SETBITS
+   92 00000072                 SETBITS          GPIOBDEN, 0xFF ;Configure used 
+                                                            pins of Port B as d
+                                                            igital
+   80 00000072 F04F 01FF       LDR              R1,=0xFF
+   81 00000076 4872            LDR              R0,=GPIOBDEN
+   82 00000078 F7FF FFC2       BL               _SETBITS
+   93 0000007C         
+   94 0000007C E8BD 4FF0       POP              { R4-R11, LR } ; Restore the li
+                                                            nk register and R4-
+                                                            R11 in case we chan
+                                                            ged them here
+   95 00000080 4770            BX               LR          ;Return back to the
+                                                             calling subroutine
+                                                            .
+   96 00000082         
+   97 00000082         
+   98 00000082         ;---------------------------------  
+   99 00000082         ; Subroutine: led_initialization
+  100 00000082         ; Description: Initializes our LEDs so they are set up f
+                       or output. If we don't
+  101 00000082         ;   do this, we will not be able to correctly turn them 
+                       on or off later.
+  102 00000082         
+  103 00000082         _led_initialization
+  104 00000082 E92D 4FF0       PUSH             { R4-R11, LR } ; stack preserve
+                                                            d registers and lin
+                                                            k register
+  105 00000086                 SETBITS          GPIOBDIR, 0xFF ; MAKE SURE ALL 
+                                                            PORTB PINS (PB0-PB7
+                                                            ) ARE SET UP FOR OU
+                                                            TPUT
+   80 00000086 F04F 01FF       LDR              R1,=0xFF
+   81 0000008A 486E            LDR              R0,=GPIOBDIR
+   82 0000008C F7FF FFB8       BL               _SETBITS
+  106 00000090                 CLEARBITS        GPIOBDATA_RW, 0x00 ; MAKE SURE 
+                                                            ALL PORTB PINS (PB0
+                                                            -PB7) START WITH 0 
+                                                            ON THE OUTPUT 
+   87 00000090 F04F 0100       LDR              R1,=0x00
+   88 00000094 486C            LDR              R0,=GPIOBDATA_RW
+   89 00000096 F7FF FFBC       BL               _CLEARBITS
+  107 0000009A E8BD 4FF0       POP              { R4-R11, LR } ; restore the pr
+                                                            eserved registers a
+                                                            nd link register
+  108 0000009E 4770            BX               LR          ; Return back to th
+                                                            e calling subroutin
+                                                            e.
+  109 000000A0         
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+  110 000000A0         ;---------------------------------  
+  111 000000A0         ; Subroutine: adc_initialization
+  112 000000A0         ; Description: Initializes our ADC Module and Sequencer 
+                       so they are set up for analog input. 
+  113 000000A0         
+  114 000000A0         _adc_initialization
+  115 000000A0 E92D 4FF0       PUSH             { R4-R11, LR } ; stack preserve
+                                                            d registers and lin
+                                                            k register
+  116 000000A4         
+  117 000000A4         ;---ADC Module Initialization (PP 817): this is copy-pas
+                       ted-edited-- see lecture------------
+  118 000000A4                 SETBITS          RCGCADC, 0x1 ;1.Enable the ADC 
+                                                            clock - RCGCADC (PP
+                                                             352).
+   80 000000A4 F04F 0101       LDR              R1,=0x1
+   81 000000A8 4868            LDR              R0,=RCGCADC
+   82 000000AA F7FF FFA9       BL               _SETBITS
+  119 000000AE         ;2.We did this in Step 3A -Enable RCGCGPIO register FOR 
+                       PORT E(see page 340).
+  120 000000AE         ;3.GPIOAFSEL initialize as 0, and we're not using their 
+                       digital Alternate function.
+  121 000000AE                 CLEARBITS        GPIOEDEN, 2_11 ;4.Config AINx A
+                                                            S analog input-clea
+                                                            r corresponding DEN
+                                                             bit in(GPIOEDEN) (
+                                                            PP682).
+   87 000000AE F04F 0103       LDR              R1,=2_11
+   88 000000B2 4867            LDR              R0,=GPIOEDEN
+   89 000000B4 F7FF FFAD       BL               _CLEARBITS
+  122 000000B8                 SETBITS          GPIOEAMSEL, 2_11 ;5. WRITE TO G
+                                                            PIOEAMSEL (687) ANA
+                                                            LOG INPUTS TO BE AN
+                                                            ALOG.
+   80 000000B8 F04F 0103       LDR              R1,=2_11
+   81 000000BC 4865            LDR              R0,=GPIOEAMSEL
+   82 000000BE F7FF FF9F       BL               _SETBITS
+  123 000000C2         ;6. SAMPLE SEQUENCER PRIORITY BEYOND SCOPE OF COURSE.
+  124 000000C2         
+  125 000000C2         ;CONFIGURE Sample Sequencer 0---------------------------
+                       ---------------------
+  126 000000C2         
+  127 000000C2                 CLEARBITS        ADCACTSS, 0x1 ;1. disable SAMPL
+                                                            E SEQUENCER-clear A
+                                                            SENn bit in ADCACTS
+                                                            S.
+   87 000000C2 F04F 0101       LDR              R1,=0x1
+   88 000000C6 4864            LDR              R0,=ADCACTSS
+   89 000000C8 F7FF FFA3       BL               _CLEARBITS
+  128 000000CC                 CLEARBITS        ADCEMUX, 0xF ;2. SET SS0 TRIGGE
+                                                            R IN ADCEMUX TO USE
+                                                             'PROCESSOR' TRIGGE
+                                                            RING.
+   87 000000CC F04F 010F       LDR              R1,=0xF
+   88 000000D0 4862            LDR              R0,=ADCEMUX
+   89 000000D2 F7FF FF9E       BL               _CLEARBITS
+  129 000000D6         ;3. NOT using a PWM generator as the trigger source.
+  130 000000D6                 WRITEBITS        ADCSSMUX0, 0x00000032 ;SET BITS
+                                                             FOR EACH input sou
+
+
+
+ARM Macro Assembler    Page 9 
+
+
+                                                            rce in the ADCSSMUX
+                                                            n register.
+   73 000000D6 4862            LDR              R0, =ADCSSMUX0
+   74 000000D8 F04F 0132       MOV              R1, #0x00000032
+   75 000000DC 6001            STR              R1, [R0]
+  131 000000DE                 WRITEBITS        ADCSSCTL0, 0x00000060 ;5. SET A
+                                                            DCSSCTL0 SO THAT 2N
+                                                            D IN SEQUENCE ENDS 
+                                                            SEQUENCE AND STARTS
+                                                             INTERRUPT.
+   73 000000DE 4861            LDR              R0, =ADCSSCTL0
+   74 000000E0 F04F 0160       MOV              R1, #0x00000060
+   75 000000E4 6001            STR              R1, [R0]
+  132 000000E6         ;6. SKIP - NOT USING INTERRUPT6. If interrupts are to be
+                        used, set the corresponding MASK bit in the ADCIM regis
+                       ter.
+  133 000000E6                 WRITEBITS        ADCPC, 1    ; set samples per s
+                                                            econd to 125,000. 
+   73 000000E6 4860            LDR              R0, =ADCPC
+   74 000000E8 F04F 0101       MOV              R1, #1
+   75 000000EC 6001            STR              R1, [R0]
+  134 000000EE         
+  135 000000EE                 SETBITS          ADCACTSS, 0x1 ;7. Enable sample
+                                                             sequencer0 - setti
+                                                            ng the  ASEN0 bit i
+                                                            n the ADCACTSS regi
+                                                            ster.
+   80 000000EE F04F 0101       LDR              R1,=0x1
+   81 000000F2 4859            LDR              R0,=ADCACTSS
+   82 000000F4 F7FF FF84       BL               _SETBITS
+  136 000000F8         
+  137 000000F8         
+  138 000000F8 E8BD 4FF0       POP              { R4-R11, LR }
+  139 000000FC 4770            BX               LR          ; Return back to th
+                                                            e calling subroutin
+                                                            e.
+  140 000000FE         
+  141 000000FE         ;=======================LOGIC==========================;
+                       
+  142 000000FE         
+  143 000000FE         __main
+  144 000000FE         
+  145 000000FE         
+  146 000000FE         ; Activate PORTS (B, E) and corresponding pins 
+  147 000000FE F7FF FFB1       BL               _led_pins_activation
+  148 00000102         
+  149 00000102         ; Initialize our LEDs so we can turn them on/off at will
+                       .
+  150 00000102 F7FF FFBE       BL               _led_initialization
+  151 00000106         
+  152 00000106         ; Turns on two lights if setbits correctly implemented
+  153 00000106 4850            LDR              R0, =GPIOBDATA_RW
+  154 00000108 F04F 0104       MOV              R1, #LED_RIGHT
+  155 0000010C F101 0110       ADD              R1, #LED_DOWN
+  156 00000110 F7FF FF76       BL               _SETBITS
+  157 00000114         
+  158 00000114 BF00            NOP                          ; BREAKPOINT 1
+  159 00000116         
+  160 00000116 F7FF FF7C       BL               _CLEARBITS
+
+
+
+ARM Macro Assembler    Page 10 
+
+
+  161 0000011A         
+  162 0000011A BF00            NOP                          ; BREAKPOINT 2
+  163 0000011C         
+  164 0000011C         ; Initialize our ADC Module so we can read from PE0 and 
+                       PE1 
+  165 0000011C F7FF FFC0       BL               _adc_initialization
+  166 00000120         
+  167 00000120         
+  168 00000120 F04F 08FE       LDR              R8, =THRESH_LOW
+  169 00000124 F44F 695F       LDR              R9, =THRESH_HIGH
+  170 00000128         
+  171 00000128         ; 5. At this point we need to implement a loop which rea
+                       ds the data from each 
+  172 00000128         ;    of the A/D data registers corresponding to the pins
+                        we have set up, and 
+  173 00000128         ;    implement logic to decide which, if any, LEDs we sh
+                       ould trigger in
+  174 00000128         ;    response. This will occur within the update_loop la
+                       bel.
+  175 00000128         
+  176 00000128         loop
+  177 00000128         
+  178 00000128         ; Clear interrupt flag so that we know we're reading a *
+                       new* adc conversion 
+  179 00000128                 SETBITS          ADCISC, 0X01 ; STEP 5-1A
+   80 00000128 F04F 0101       LDR              R1,=0X01
+   81 0000012C 484F            LDR              R0,=ADCISC
+   82 0000012E F7FF FF67       BL               _SETBITS
+  180 00000132         ; Start processor trigger (tell sequencer 0 to start con
+                       verting ADCs)
+  181 00000132                 SETBITS          ADCPSSI, 1  ; STEP 5-1B
+   80 00000132 F04F 0101       LDR              R1,=1
+   81 00000136 484E            LDR              R0,=ADCPSSI
+   82 00000138 F7FF FF62       BL               _SETBITS
+  182 0000013C         
+  183 0000013C         
+  184 0000013C         ; Wait until reading is complete (use end flag) STEP 5-2
+                       
+  185 0000013C 484D            LDR              R0, =ADCRIS ; _wait_adc EXPECTS
+                                                             TO HAVE THE ADC-Ra
+                                                            w Interrupt Status 
+                                                            address loaded into
+                                                             r0.
+  186 0000013E F7FF FF7E       BL               _wait_adc   ; and come back fro
+                                                            m there once you ha
+                                                            ve ADC conversions 
+                                                            for us.
+  187 00000142         
+  188 00000142         ; read axes 
+  189 00000142 484D            LDR              R0, =ADCSSFIFO0
+  190 00000144 F7FF FF83       BL               _read_adc
+  191 00000148 4605            MOV              R5, R0      ;STEP 5-3 store the
+                                                             first read value--
+                                                             x-value-- in R5.
+  192 0000014A 484B            LDR              R0, =ADCSSFIFO0
+  193 0000014C F7FF FF7F       BL               _read_adc
+  194 00000150 4606            MOV              R6, R0      ;STEP 5-4 store y-v
+                                                            alue
+  195 00000152         
+
+
+
+ARM Macro Assembler    Page 11 
+
+
+  196 00000152         ; turn off all LEDS (GPIOxDATA_RW - ports for LEDs)
+  197 00000152         leds_off
+  198 00000152                 CLEARBITS        GPIOBDATA_RW, 0XFF ;STEP 5-5 TU
+                                                            RN OFF ALL PB OUTPU
+                                                            TS.
+   87 00000152 F04F 01FF       LDR              R1,=0XFF
+   88 00000156 483C            LDR              R0,=GPIOBDATA_RW
+   89 00000158 F7FF FF5B       BL               _CLEARBITS
+  199 0000015C         ; STUDENT CODE HERE 
+  200 0000015C BF00            NOP                          ;****STEP 5A**** RE
+                                                            MEMBER: WITHOUT COD
+                                                            E, THERE IS NO PLAC
+                                                            E FOR A BREAKPOINT
+  201 0000015E F5B6 6F5F       CMP              R6, #THRESH_HIGH ;****STEP 6A**
+                                                            ** COMPARE R6 WITH 
+                                                            HIGH THRESHOLD, BRA
+                                                            NCH TO _TURN_ON_UP_
+                                                            LED IF HIGH,
+  202 00000162 BFC8 F000 
+              F81A             BLGT             _TURN_ON_UP_LED ;****STEP 6C***
+                                                            * IF COMPARE ENDS W
+                                                            ITH OTHER RESULTS, 
+                                                            BRANCH TO TURN OFF 
+                                                            THAT LED
+  203 00000168 BFB8 F000 
+              F821             BLLT             _TURN_OFF_UP_LED
+  204 0000016E         ;****STEP 6D...**** NOW DO THE SAME FOR DOWN, LEFT, AND 
+                       RIGHT.
+  205 0000016E 2EFE            CMP              R6, #THRESH_LOW
+  206 00000170 BFB8 F000 
+              F83B             BLLT             _TURN_ON_DOWN_LED
+  207 00000176 BFC8 F000 
+              F842             BLGT             _TURN_OFF_DOWN_LED
+  208 0000017C         
+  209 0000017C F5B5 6F5F       CMP              R5, #THRESH_HIGH
+  210 00000180 BFC8 F000 
+              F81F             BLGT             _TURN_ON_RIGHT_LED
+  211 00000186 BFB8 F000 
+              F826             BLLT             _TURN_OFF_RIGHT_LED
+  212 0000018C         
+  213 0000018C 2DFE            CMP              R5, #THRESH_LOW
+  214 0000018E BFB8 F000 
+              F840             BLLT             _TURN_ON_LEFT_LED
+  215 00000194 BFC8 F000 
+              F847             BLGT             _TURN_OFF_LEFT_LED
+  216 0000019A         
+  217 0000019A E7C5            B                loop
+  218 0000019C         
+  219 0000019C         _TURN_ON_UP_LED                      ; ****STEP 6B**** C
+                                                            REATE A SUBROUTINE 
+                                                            HERE THAT TURNS ON 
+                                                            LED AND RETURNS
+  220 0000019C E92D 4FF0       PUSH             { R4-R11, LR }
+  221 000001A0                 SETBITS          GPIOBDATA_RW, LED_UP
+   80 000001A0 F04F 0101       LDR              R1,=LED_UP
+   81 000001A4 4828            LDR              R0,=GPIOBDATA_RW
+   82 000001A6 F7FF FF2B       BL               _SETBITS
+  222 000001AA E8BD 4FF0       POP              { R4-R11, LR }
+  223 000001AE 4770            BX               LR
+
+
+
+ARM Macro Assembler    Page 12 
+
+
+  224 000001B0         
+  225 000001B0         _TURN_OFF_UP_LED
+  226 000001B0 E92D 4FF0       PUSH             { R4-R11, LR }
+  227 000001B4                 CLEARBITS        GPIOBDATA_RW, LED_UP
+   87 000001B4 F04F 0101       LDR              R1,=LED_UP
+   88 000001B8 4823            LDR              R0,=GPIOBDATA_RW
+   89 000001BA F7FF FF2A       BL               _CLEARBITS
+  228 000001BE E8BD 4FF0       POP              { R4-R11, LR }
+  229 000001C2 4770            BX               LR
+  230 000001C4         
+  231 000001C4         _TURN_ON_RIGHT_LED                   ;
+  232 000001C4 E92D 4FF0       PUSH             { R4-R11, LR }
+  233 000001C8                 SETBITS          GPIOBDATA_RW, LED_RIGHT
+   80 000001C8 F04F 0104       LDR              R1,=LED_RIGHT
+   81 000001CC 481E            LDR              R0,=GPIOBDATA_RW
+   82 000001CE F7FF FF17       BL               _SETBITS
+  234 000001D2 E8BD 4FF0       POP              { R4-R11, LR }
+  235 000001D6 4770            BX               LR
+  236 000001D8         
+  237 000001D8         _TURN_OFF_RIGHT_LED
+  238 000001D8 E92D 4FF0       PUSH             { R4-R11, LR }
+  239 000001DC                 CLEARBITS        GPIOBDATA_RW, LED_RIGHT
+   87 000001DC F04F 0104       LDR              R1,=LED_RIGHT
+   88 000001E0 4819            LDR              R0,=GPIOBDATA_RW
+   89 000001E2 F7FF FF16       BL               _CLEARBITS
+  240 000001E6 E8BD 4FF0       POP              { R4-R11, LR }
+  241 000001EA 4770            BX               LR
+  242 000001EC         
+  243 000001EC         _TURN_ON_DOWN_LED                    ;
+  244 000001EC E92D 4FF0       PUSH             { R4-R11, LR }
+  245 000001F0                 SETBITS          GPIOBDATA_RW, LED_DOWN
+   80 000001F0 F04F 0110       LDR              R1,=LED_DOWN
+   81 000001F4 4814            LDR              R0,=GPIOBDATA_RW
+   82 000001F6 F7FF FF03       BL               _SETBITS
+  246 000001FA E8BD 4FF0       POP              { R4-R11, LR }
+  247 000001FE 4770            BX               LR
+  248 00000200         
+  249 00000200         _TURN_OFF_DOWN_LED
+  250 00000200 E92D 4FF0       PUSH             { R4-R11, LR }
+  251 00000204                 CLEARBITS        GPIOBDATA_RW, LED_DOWN
+   87 00000204 F04F 0110       LDR              R1,=LED_DOWN
+   88 00000208 480F            LDR              R0,=GPIOBDATA_RW
+   89 0000020A F7FF FF02       BL               _CLEARBITS
+  252 0000020E E8BD 4FF0       POP              { R4-R11, LR }
+  253 00000212 4770            BX               LR
+  254 00000214         
+  255 00000214         _TURN_ON_LEFT_LED                    ;
+  256 00000214 E92D 4FF0       PUSH             { R4-R11, LR }
+  257 00000218                 SETBITS          GPIOBDATA_RW, LED_LEFT
+   80 00000218 F04F 0140       LDR              R1,=LED_LEFT
+   81 0000021C 480A            LDR              R0,=GPIOBDATA_RW
+   82 0000021E F7FF FEEF       BL               _SETBITS
+  258 00000222 E8BD 4FF0       POP              { R4-R11, LR }
+  259 00000226 4770            BX               LR
+  260 00000228         
+  261 00000228         _TURN_OFF_LEFT_LED
+  262 00000228 E92D 4FF0       PUSH             { R4-R11, LR }
+  263 0000022C                 CLEARBITS        GPIOBDATA_RW, LED_LEFT
+   87 0000022C F04F 0140       LDR              R1,=LED_LEFT
+
+
+
+ARM Macro Assembler    Page 13 
+
+
+   88 00000230 4805            LDR              R0,=GPIOBDATA_RW
+   89 00000232 F7FF FEEE       BL               _CLEARBITS
+  264 00000236 E8BD 4FF0       POP              { R4-R11, LR }
+  265 0000023A 4770            BX               LR
+  266 0000023C         
+  267 0000023C         ; END STUDENT CODE
+  268 0000023C         
+  269 0000023C                 END
+              400FE608 
+              4000551C 
+              40005400 
+              400053FC 
+              400FE638 
+              4002451C 
+              40024528 
+              40038000 
+              40038014 
+              40038040 
+              40038044 
+              40038FC4 
+              4003800C 
+              40038028 
+              40038004 
+              40038048 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\lab9_main.d -o.\objects\lab9_main.o -I.\RTE\_Target_1
+ -I"C:\Program Files (x86)\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include"
+ -I"C:\Program Files (x86)\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\
+TM4C123" --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 526" -
+-predefine="_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --list=.\listings\l
+ab9_main.lst Lab9_Main.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 1 in file Lab9_Data.s
+   Uses
+      None
+Comment: DATA unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+LOOPDELAY 0000002E
+
+Symbol: LOOPDELAY
+   Definitions
+      At line 40 in file Lab9_Main.s
+   Uses
+      At line 43 in file Lab9_Main.s
+Comment: LOOPDELAY used once
+Lab9_Main 00000000
+
+Symbol: Lab9_Main
+   Definitions
+      At line 11 in file Lab9_Main.s
+   Uses
+      None
+Comment: Lab9_Main unused
+_CLEARBITS 00000012
+
+Symbol: _CLEARBITS
+   Definitions
+      At line 28 in file Lab9_Main.s
+   Uses
+      At line 89 in macro CLEARBITS
+      at line 106 in file Lab9_Main.s
+      At line 160 in file Lab9_Main.s
+
+_DELAY 00000028
+
+Symbol: _DELAY
+   Definitions
+      At line 37 in file Lab9_Main.s
+   Uses
+      None
+Comment: _DELAY unused
+_SETBITS 00000000
+
+Symbol: _SETBITS
+   Definitions
+      At line 18 in file Lab9_Main.s
+   Uses
+      At line 82 in macro SETBITS
+      at line 91 in file Lab9_Main.s
+      At line 156 in file Lab9_Main.s
+
+_TURN_OFF_DOWN_LED 00000200
+
+Symbol: _TURN_OFF_DOWN_LED
+   Definitions
+      At line 249 in file Lab9_Main.s
+   Uses
+      At line 207 in file Lab9_Main.s
+Comment: _TURN_OFF_DOWN_LED used once
+_TURN_OFF_LEFT_LED 00000228
+
+Symbol: _TURN_OFF_LEFT_LED
+   Definitions
+      At line 261 in file Lab9_Main.s
+   Uses
+      At line 215 in file Lab9_Main.s
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+Comment: _TURN_OFF_LEFT_LED used once
+_TURN_OFF_RIGHT_LED 000001D8
+
+Symbol: _TURN_OFF_RIGHT_LED
+   Definitions
+      At line 237 in file Lab9_Main.s
+   Uses
+      At line 211 in file Lab9_Main.s
+Comment: _TURN_OFF_RIGHT_LED used once
+_TURN_OFF_UP_LED 000001B0
+
+Symbol: _TURN_OFF_UP_LED
+   Definitions
+      At line 225 in file Lab9_Main.s
+   Uses
+      At line 203 in file Lab9_Main.s
+Comment: _TURN_OFF_UP_LED used once
+_TURN_ON_DOWN_LED 000001EC
+
+Symbol: _TURN_ON_DOWN_LED
+   Definitions
+      At line 243 in file Lab9_Main.s
+   Uses
+      At line 206 in file Lab9_Main.s
+Comment: _TURN_ON_DOWN_LED used once
+_TURN_ON_LEFT_LED 00000214
+
+Symbol: _TURN_ON_LEFT_LED
+   Definitions
+      At line 255 in file Lab9_Main.s
+   Uses
+      At line 214 in file Lab9_Main.s
+Comment: _TURN_ON_LEFT_LED used once
+_TURN_ON_RIGHT_LED 000001C4
+
+Symbol: _TURN_ON_RIGHT_LED
+   Definitions
+      At line 231 in file Lab9_Main.s
+   Uses
+      At line 210 in file Lab9_Main.s
+Comment: _TURN_ON_RIGHT_LED used once
+_TURN_ON_UP_LED 0000019C
+
+Symbol: _TURN_ON_UP_LED
+   Definitions
+      At line 219 in file Lab9_Main.s
+   Uses
+      At line 202 in file Lab9_Main.s
+Comment: _TURN_ON_UP_LED used once
+__main 000000FE
+
+Symbol: __main
+   Definitions
+      At line 143 in file Lab9_Main.s
+   Uses
+      At line 10 in file Lab9_Main.s
+Comment: __main used once
+_adc_initialization 000000A0
+
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+Symbol: _adc_initialization
+   Definitions
+      At line 114 in file Lab9_Main.s
+   Uses
+      At line 165 in file Lab9_Main.s
+Comment: _adc_initialization used once
+_led_initialization 00000082
+
+Symbol: _led_initialization
+   Definitions
+      At line 103 in file Lab9_Main.s
+   Uses
+      At line 150 in file Lab9_Main.s
+Comment: _led_initialization used once
+_led_pins_activation 00000064
+
+Symbol: _led_pins_activation
+   Definitions
+      At line 88 in file Lab9_Main.s
+   Uses
+      At line 147 in file Lab9_Main.s
+Comment: _led_pins_activation used once
+_read_adc 0000004E
+
+Symbol: _read_adc
+   Definitions
+      At line 68 in file Lab9_Main.s
+   Uses
+      At line 190 in file Lab9_Main.s
+      At line 193 in file Lab9_Main.s
+
+_wait_adc 0000003E
+
+Symbol: _wait_adc
+   Definitions
+      At line 52 in file Lab9_Main.s
+   Uses
+      At line 186 in file Lab9_Main.s
+Comment: _wait_adc used once
+_wait_for_adc_loop 00000042
+
+Symbol: _wait_for_adc_loop
+   Definitions
+      At line 54 in file Lab9_Main.s
+   Uses
+      At line 58 in file Lab9_Main.s
+Comment: _wait_for_adc_loop used once
+leds_off 00000152
+
+Symbol: leds_off
+   Definitions
+      At line 197 in file Lab9_Main.s
+   Uses
+      None
+Comment: leds_off unused
+loop 00000128
+
+Symbol: loop
+   Definitions
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 176 in file Lab9_Main.s
+   Uses
+      At line 217 in file Lab9_Main.s
+Comment: loop used once
+22 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+ADCACTSS 40038000
+
+Symbol: ADCACTSS
+   Definitions
+      At line 43 in file Lab9_Data.s
+   Uses
+      At line 88 in macro CLEARBITS
+      at line 127 in file Lab9_Main.s
+      At line 81 in macro SETBITS
+      at line 135 in file Lab9_Main.s
+
+ADCEMUX 40038014
+
+Symbol: ADCEMUX
+   Definitions
+      At line 44 in file Lab9_Data.s
+   Uses
+      At line 88 in macro CLEARBITS
+      at line 128 in file Lab9_Main.s
+Comment: ADCEMUX used once
+ADCISC 4003800C
+
+Symbol: ADCISC
+   Definitions
+      At line 49 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 179 in file Lab9_Main.s
+Comment: ADCISC used once
+ADCPC 40038FC4
+
+Symbol: ADCPC
+   Definitions
+      At line 42 in file Lab9_Data.s
+   Uses
+      At line 73 in macro WRITEBITS
+      at line 133 in file Lab9_Main.s
+Comment: ADCPC used once
+ADCPSSI 40038028
+
+Symbol: ADCPSSI
+   Definitions
+      At line 50 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 181 in file Lab9_Main.s
+Comment: ADCPSSI used once
+ADCRIS 40038004
+
+Symbol: ADCRIS
+   Definitions
+      At line 47 in file Lab9_Data.s
+   Uses
+      At line 185 in file Lab9_Main.s
+Comment: ADCRIS used once
+ADCSAC 40038030
+
+Symbol: ADCSAC
+   Definitions
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 51 in file Lab9_Data.s
+   Uses
+      None
+Comment: ADCSAC unused
+ADCSSCTL0 40038044
+
+Symbol: ADCSSCTL0
+   Definitions
+      At line 46 in file Lab9_Data.s
+   Uses
+      At line 73 in macro WRITEBITS
+      at line 131 in file Lab9_Main.s
+Comment: ADCSSCTL0 used once
+ADCSSFIFO0 40038048
+
+Symbol: ADCSSFIFO0
+   Definitions
+      At line 48 in file Lab9_Data.s
+   Uses
+      At line 189 in file Lab9_Main.s
+      At line 192 in file Lab9_Main.s
+
+ADCSSMUX0 40038040
+
+Symbol: ADCSSMUX0
+   Definitions
+      At line 45 in file Lab9_Data.s
+   Uses
+      At line 73 in macro WRITEBITS
+      at line 130 in file Lab9_Main.s
+Comment: ADCSSMUX0 used once
+GPIOAAFSEL 40004420
+
+Symbol: GPIOAAFSEL
+   Definitions
+      At line 13 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOAAFSEL unused
+GPIOADATA_RW 400043FC
+
+Symbol: GPIOADATA_RW
+   Definitions
+      At line 10 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOADATA_RW unused
+GPIOADEN 4000451C
+
+Symbol: GPIOADEN
+   Definitions
+      At line 12 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOADEN unused
+GPIOADIR 40004400
+
+Symbol: GPIOADIR
+   Definitions
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 11 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOADIR unused
+GPIOAPCTL 4000452C
+
+Symbol: GPIOAPCTL
+   Definitions
+      At line 14 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOAPCTL unused
+GPIOBDATA_RW 400053FC
+
+Symbol: GPIOBDATA_RW
+   Definitions
+      At line 17 in file Lab9_Data.s
+   Uses
+      At line 88 in macro CLEARBITS
+      at line 106 in file Lab9_Main.s
+      At line 153 in file Lab9_Main.s
+      At line 81 in macro SETBITS
+      at line 221 in file Lab9_Main.s
+
+GPIOBDEN 4000551C
+
+Symbol: GPIOBDEN
+   Definitions
+      At line 19 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 92 in file Lab9_Main.s
+Comment: GPIOBDEN used once
+GPIOBDIR 40005400
+
+Symbol: GPIOBDIR
+   Definitions
+      At line 18 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 105 in file Lab9_Main.s
+Comment: GPIOBDIR used once
+GPIOEAFSEL 40024420
+
+Symbol: GPIOEAFSEL
+   Definitions
+      At line 39 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOEAFSEL unused
+GPIOEAMSEL 40024528
+
+Symbol: GPIOEAMSEL
+   Definitions
+      At line 38 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 122 in file Lab9_Main.s
+Comment: GPIOEAMSEL used once
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
+GPIOEDATA_RW 400243FC
+
+Symbol: GPIOEDATA_RW
+   Definitions
+      At line 22 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOEDATA_RW unused
+GPIOEDEN 4002451C
+
+Symbol: GPIOEDEN
+   Definitions
+      At line 24 in file Lab9_Data.s
+   Uses
+      At line 88 in macro CLEARBITS
+      at line 121 in file Lab9_Main.s
+Comment: GPIOEDEN used once
+GPIOEDIR 40024400
+
+Symbol: GPIOEDIR
+   Definitions
+      At line 23 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOEDIR unused
+GPIOFDATA_RW 400253FC
+
+Symbol: GPIOFDATA_RW
+   Definitions
+      At line 27 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOFDATA_RW unused
+GPIOFDEN 4002551C
+
+Symbol: GPIOFDEN
+   Definitions
+      At line 29 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOFDEN unused
+GPIOFDIR 40025400
+
+Symbol: GPIOFDIR
+   Definitions
+      At line 28 in file Lab9_Data.s
+   Uses
+      None
+Comment: GPIOFDIR unused
+LED_DOWN 00000010
+
+Symbol: LED_DOWN
+   Definitions
+      At line 60 in file Lab9_Data.s
+   Uses
+      At line 155 in file Lab9_Main.s
+      At line 80 in macro SETBITS
+      at line 245 in file Lab9_Main.s
+      At line 87 in macro CLEARBITS
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Absolute symbols
+
+      at line 251 in file Lab9_Main.s
+
+LED_LEFT 00000040
+
+Symbol: LED_LEFT
+   Definitions
+      At line 61 in file Lab9_Data.s
+   Uses
+      At line 80 in macro SETBITS
+      at line 257 in file Lab9_Main.s
+      At line 87 in macro CLEARBITS
+      at line 263 in file Lab9_Main.s
+
+LED_RIGHT 00000004
+
+Symbol: LED_RIGHT
+   Definitions
+      At line 59 in file Lab9_Data.s
+   Uses
+      At line 154 in file Lab9_Main.s
+      At line 80 in macro SETBITS
+      at line 233 in file Lab9_Main.s
+      At line 87 in macro CLEARBITS
+      at line 239 in file Lab9_Main.s
+
+LED_UP 00000001
+
+Symbol: LED_UP
+   Definitions
+      At line 58 in file Lab9_Data.s
+   Uses
+      At line 80 in macro SETBITS
+      at line 221 in file Lab9_Main.s
+      At line 87 in macro CLEARBITS
+      at line 227 in file Lab9_Main.s
+
+RCGCADC 400FE638
+
+Symbol: RCGCADC
+   Definitions
+      At line 34 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 118 in file Lab9_Main.s
+Comment: RCGCADC used once
+RCGCGPIO 400FE608
+
+Symbol: RCGCGPIO
+   Definitions
+      At line 3 in file Lab9_Data.s
+   Uses
+      At line 81 in macro SETBITS
+      at line 91 in file Lab9_Main.s
+Comment: RCGCGPIO used once
+THRESH_HIGH 00000DF0
+
+Symbol: THRESH_HIGH
+   Definitions
+      At line 55 in file Lab9_Data.s
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+Absolute symbols
+
+   Uses
+      At line 169 in file Lab9_Main.s
+      At line 201 in file Lab9_Main.s
+      At line 209 in file Lab9_Main.s
+
+THRESH_LOW 000000FE
+
+Symbol: THRESH_LOW
+   Definitions
+      At line 54 in file Lab9_Data.s
+   Uses
+      At line 168 in file Lab9_Main.s
+      At line 205 in file Lab9_Main.s
+      At line 213 in file Lab9_Main.s
+
+34 symbols
+394 symbols in table

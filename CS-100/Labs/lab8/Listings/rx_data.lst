@@ -1,0 +1,596 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             DATA, CODE, READONLY
+    2 00000000         
+    3 00000000 400FE608 
+                       RCGCGPIO
+                               EQU              0X400FE608  ;Address of GPIO Mo
+                                                            dule, it ACTIVATES 
+                                                            PORTS...
+    4 00000000         ; ...bit 0 = port A, bit 1 = port B, ... and bit 5 = por
+                       t F
+    5 00000000         
+    6 00000000         ; Serial communication is attached to lines PA0(receive)
+                        and PA1(transmit) 
+    7 00000000 400043FC 
+                       GPIOADATA_RW
+                               EQU              0X400043FC  ; Address of Port A
+                                                             (DATA)of our micro
+                                                            controller (buttons
+                                                            )
+    8 00000000 40004400 
+                       GPIOADIR
+                               EQU              0x40004400  ; Address of Port A
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+    9 00000000 4000451C 
+                       GPIOADEN
+                               EQU              0X4000451C  ; Address of Port A
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   10 00000000         
+   11 00000000 40004420 
+                       GPIOAAFSEL
+                               EQU              0X40004420  ; ***2A2- Address o
+                                                            f Port A (alternate
+                                                             function select) o
+                                                            f our microcontroll
+                                                            er port a
+   12 00000000 4000452C 
+                       GPIOAPCTL
+                               EQU              0X4000452C  ; ***2A3- what the 
+                                                            actual alternate fu
+                                                            nction is for port 
+                                                            a
+   13 00000000         
+   14 00000000 400053FC 
+                       GPIOBDATA_RW
+                               EQU              0X400053FC  ; Address of Port B
+                                                             (DATA)of our micro
+                                                            controller (LEDs)
+   15 00000000 40005400 
+                       GPIOBDIR
+                               EQU              0x40005400  ; Address of Port B
+                                                             (DIRECTION SETTING
+                                                            )of our microcontro
+                                                            ller
+   16 00000000 4000551C 
+                       GPIOBDEN
+                               EQU              0X4000551C  ; Address of Port B
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                                                             (DIGITAL SETTING) 
+                                                            of our microcontrol
+                                                            ler
+   17 00000000         ;PWM Settings for Port B 
+   18 00000000 40005420 
+                       GPIOBAFSEL
+                               EQU              0X40005420  ; Address of Port B
+                                                             (Alternate functio
+                                                            n SETTING) of our m
+                                                            icrocontroller
+   19 00000000 4000552C 
+                       GPIOBPCTL
+                               EQU              0X4000552C  ; Address to config
+                                                            ure which alternate
+                                                             function to use 
+   20 00000000         
+   21 00000000         ;PORT F - TIVABOARD USES PORT F, PINS PF1,PF2, AND PF3 F
+                       OR THE ONBOARD RGB LED
+   22 00000000 400253FC 
+                       GPIOFDATA_RW
+                               EQU              0X400253FC  ; ADDRESS OF PORT F
+                                                             PINS - DATA REGIST
+                                                            ER
+   23 00000000 40025400 
+                       GPIOFDIR
+                               EQU              0X40025400  ; ADDRESS OF PORT F
+                                                             - DIRECTION
+   24 00000000 4002551C 
+                       GPIOFDEN
+                               EQU              0X4002551C  ; ADDRESS OF PORT F
+                                                             PINS - DIGITAL ENA
+                                                            BLE
+   25 00000000         
+   26 00000000         
+   27 00000000         ;UART ACCESS
+   28 00000000 400FE618 
+                       RCGCUART
+                               EQU              0X400FE618  ; ***2A1- ENABLE UA
+                                                            RT MODULE USING THI
+                                                            S REGISTER (344)
+   29 00000000         
+   30 00000000         ;UART general data
+   31 00000000 4000C000 
+                       UART0   EQU              0x4000C000  ; Base address of a
+                                                            ll UART0 functions
+   32 00000000 4000C000 
+                       UART0DR EQU              UART0       ;***2B address of t
+                                                            he UART0 data regis
+                                                            ter
+   33 00000000 4000C018 
+                       UART0FR EQU              UART0+0x18  ;***2B UART0 flag r
+                                                            egister 
+   34 00000000 4000C024 
+                       UART0IBRD
+                               EQU              UART0+0x24  ;***2B UART0 intege
+                                                            r baud-rate divider
+                                                             register
+   35 00000000 4000C028 
+                       UART0FBRD
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+                               EQU              UART0+0x28  ;***2B UART0 fracti
+                                                            onal baud-rate divi
+                                                            der register
+   36 00000000 4000C02C 
+                       UART0LCRH
+                               EQU              UART0+0x2C  ;***2B UART0 Line C
+                                                            ontrol register
+   37 00000000 4000C030 
+                       UART0CTL
+                               EQU              UART0+0x30  ;***2B UART0 contro
+                                                            l register
+   38 00000000 4000CFC8 
+                       UART0CC EQU              UART0+0xFC8 ;***2B UART0 Clock 
+                                                            Configuration regis
+                                                            ter
+   39 00000000         
+   40 00000000         
+   41 00000000         ;ADC Settings for Port E 
+   42 00000000 40024528 
+                       GPIOEAMSEL
+                               EQU              0X40024528  ; Address of Port E
+                                                             (ANALOG SETTING) o
+                                                            f our microcontroll
+                                                            er
+   43 00000000         
+   44 00000000         ;ADC General Settings
+   45 00000000 400FE638 
+                       RCGCADC EQU              0x400FE638  ; Enable ADC Module
+                                                             PROVIDES A CLOCK  
+                                                            BIT0 = MODULE 0 BIT
+                                                            1=MODULE 1
+   46 00000000 40038FC4 
+                       ADCPC   EQU              0X40038FC4  ; Select ADC Speed 
+                                                            1-125KSPS, 3-250KSP
+                                                            S, 5-500KSPS, 7 - 1
+                                                            MSPS
+   47 00000000 40038000 
+                       ADCACTSS
+                               EQU              0X40038000  ; Address to enable
+                                                             and disable the AD
+                                                            C Sequencer (Seq 0 
+                                                            = Bit 0) ;;(BIT 0-3
+                                                             SEQ 0 -3) BIT 16 -
+                                                             (0 IDLE) (1 BUSY) 
+                                                            
+   48 00000000 40038014 
+                       ADCEMUX EQU              0X40038014  ; Select which even
+                                                            t triggers the samp
+                                                            le sequencer (Seq 0
+                                                             bits(0- 3) 0XF = A
+                                                            LWAYS)
+   49 00000000 40038040 
+                       ADCSSMUX0
+                               EQU              0X40038040  ; Select which ADC 
+                                                            channels the sequen
+                                                            cer 0 will read (AI
+                                                            N3 = PE0, AIN2 = PE
+                                                            1)
+   50 00000000 40038044 
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+                       ADCSSCTL0
+                               EQU              0X40038044  ; Address to config
+                                                            ure the sample cont
+                                                            rol bits (interrupt
+                                                            ion and end of sequ
+                                                            encer) 
+   51 00000000 40038004 
+                       ADCRIS  EQU              0X40038004
+   52 00000000 40038048 
+                       ADCSSFIFO0
+                               EQU              0X40038048  ; DATA (BITS 0-11)
+   53 00000000 4003800C 
+                       ADCISC  EQU              0X4003800C
+   54 00000000         
+   55 00000000         
+   56 00000000         ;constants 
+   57 00000000 00D00000 
+                       COUNT1  EQU              0x00D00000
+   58 00000000         
+   59 00000000         
+   60 00000000         ; macros
+   61 00000000                 MACRO
+   62 00000000                 TRANSMIT8BITS    $BITS_TO_TRANSMIT
+   63 00000000                 MOV              R0,#$BITS_TO_TRANSMIT
+   64 00000000                 BL               _TRANSMIT
+   65 00000000                 MEND
+   66 00000000         
+   67 00000000                 MACRO
+   68 00000000                 WRITEBITS        $addr, $data
+   69 00000000                 LDR              R0, =$addr
+   70 00000000                 MOV              R1, #$data
+   71 00000000                 STR              R1, [R0]
+   72 00000000                 MEND
+   73 00000000         
+   74 00000000                 MACRO
+   75 00000000                 SETBITS          $ADDRESS, $BITS
+   76 00000000                 LDR              R1,=$BITS
+   77 00000000                 LDR              R0,=$ADDRESS
+   78 00000000                 BL               _SETBITS
+   79 00000000                 MEND
+   80 00000000         
+   81 00000000                 MACRO
+   82 00000000                 CLEARBITS        $ADDRESS, $BITS
+   83 00000000                 LDR              R1,=$BITS
+   84 00000000                 LDR              R0,=$ADDRESS
+   85 00000000                 BL               _CLEARBITS
+   86 00000000                 MEND
+   87 00000000         
+   88 00000000                 MACRO
+   89 00000000                 DLAY             $DELAYLOOPCOUNT
+   90 00000000                 LDR              R0,=$DELAYLOOPCOUNT
+   91 00000000                 BL               _DELAY
+   92 00000000                 MEND
+   93 00000000         
+   94 00000000         
+   95 00000000         
+   96 00000000                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\rx_data.d -o.\objects\rx_data.o -I.\RTE\_Target_1 -I"
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+C:\Program Files (x86)\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include" -I"
+C:\Program Files (x86)\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C
+123" --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 526" --pre
+define="_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --list=.\listings\rx_da
+ta.lst rx_data.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 1 in file rx_data.s
+   Uses
+      None
+Comment: DATA unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+ADCACTSS 40038000
+
+Symbol: ADCACTSS
+   Definitions
+      At line 47 in file rx_data.s
+   Uses
+      None
+Comment: ADCACTSS unused
+ADCEMUX 40038014
+
+Symbol: ADCEMUX
+   Definitions
+      At line 48 in file rx_data.s
+   Uses
+      None
+Comment: ADCEMUX unused
+ADCISC 4003800C
+
+Symbol: ADCISC
+   Definitions
+      At line 53 in file rx_data.s
+   Uses
+      None
+Comment: ADCISC unused
+ADCPC 40038FC4
+
+Symbol: ADCPC
+   Definitions
+      At line 46 in file rx_data.s
+   Uses
+      None
+Comment: ADCPC unused
+ADCRIS 40038004
+
+Symbol: ADCRIS
+   Definitions
+      At line 51 in file rx_data.s
+   Uses
+      None
+Comment: ADCRIS unused
+ADCSSCTL0 40038044
+
+Symbol: ADCSSCTL0
+   Definitions
+      At line 50 in file rx_data.s
+   Uses
+      None
+Comment: ADCSSCTL0 unused
+ADCSSFIFO0 40038048
+
+Symbol: ADCSSFIFO0
+   Definitions
+      At line 52 in file rx_data.s
+   Uses
+      None
+Comment: ADCSSFIFO0 unused
+ADCSSMUX0 40038040
+
+Symbol: ADCSSMUX0
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
+   Definitions
+      At line 49 in file rx_data.s
+   Uses
+      None
+Comment: ADCSSMUX0 unused
+COUNT1 00D00000
+
+Symbol: COUNT1
+   Definitions
+      At line 57 in file rx_data.s
+   Uses
+      None
+Comment: COUNT1 unused
+GPIOAAFSEL 40004420
+
+Symbol: GPIOAAFSEL
+   Definitions
+      At line 11 in file rx_data.s
+   Uses
+      None
+Comment: GPIOAAFSEL unused
+GPIOADATA_RW 400043FC
+
+Symbol: GPIOADATA_RW
+   Definitions
+      At line 7 in file rx_data.s
+   Uses
+      None
+Comment: GPIOADATA_RW unused
+GPIOADEN 4000451C
+
+Symbol: GPIOADEN
+   Definitions
+      At line 9 in file rx_data.s
+   Uses
+      None
+Comment: GPIOADEN unused
+GPIOADIR 40004400
+
+Symbol: GPIOADIR
+   Definitions
+      At line 8 in file rx_data.s
+   Uses
+      None
+Comment: GPIOADIR unused
+GPIOAPCTL 4000452C
+
+Symbol: GPIOAPCTL
+   Definitions
+      At line 12 in file rx_data.s
+   Uses
+      None
+Comment: GPIOAPCTL unused
+GPIOBAFSEL 40005420
+
+Symbol: GPIOBAFSEL
+   Definitions
+      At line 18 in file rx_data.s
+   Uses
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+      None
+Comment: GPIOBAFSEL unused
+GPIOBDATA_RW 400053FC
+
+Symbol: GPIOBDATA_RW
+   Definitions
+      At line 14 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBDATA_RW unused
+GPIOBDEN 4000551C
+
+Symbol: GPIOBDEN
+   Definitions
+      At line 16 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBDEN unused
+GPIOBDIR 40005400
+
+Symbol: GPIOBDIR
+   Definitions
+      At line 15 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBDIR unused
+GPIOBPCTL 4000552C
+
+Symbol: GPIOBPCTL
+   Definitions
+      At line 19 in file rx_data.s
+   Uses
+      None
+Comment: GPIOBPCTL unused
+GPIOEAMSEL 40024528
+
+Symbol: GPIOEAMSEL
+   Definitions
+      At line 42 in file rx_data.s
+   Uses
+      None
+Comment: GPIOEAMSEL unused
+GPIOFDATA_RW 400253FC
+
+Symbol: GPIOFDATA_RW
+   Definitions
+      At line 22 in file rx_data.s
+   Uses
+      None
+Comment: GPIOFDATA_RW unused
+GPIOFDEN 4002551C
+
+Symbol: GPIOFDEN
+   Definitions
+      At line 24 in file rx_data.s
+   Uses
+      None
+Comment: GPIOFDEN unused
+GPIOFDIR 40025400
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
+
+Symbol: GPIOFDIR
+   Definitions
+      At line 23 in file rx_data.s
+   Uses
+      None
+Comment: GPIOFDIR unused
+RCGCADC 400FE638
+
+Symbol: RCGCADC
+   Definitions
+      At line 45 in file rx_data.s
+   Uses
+      None
+Comment: RCGCADC unused
+RCGCGPIO 400FE608
+
+Symbol: RCGCGPIO
+   Definitions
+      At line 3 in file rx_data.s
+   Uses
+      None
+Comment: RCGCGPIO unused
+RCGCUART 400FE618
+
+Symbol: RCGCUART
+   Definitions
+      At line 28 in file rx_data.s
+   Uses
+      None
+Comment: RCGCUART unused
+UART0 4000C000
+
+Symbol: UART0
+   Definitions
+      At line 31 in file rx_data.s
+   Uses
+      At line 32 in file rx_data.s
+      At line 33 in file rx_data.s
+      At line 34 in file rx_data.s
+      At line 35 in file rx_data.s
+      At line 36 in file rx_data.s
+      At line 37 in file rx_data.s
+      At line 38 in file rx_data.s
+
+UART0CC 4000CFC8
+
+Symbol: UART0CC
+   Definitions
+      At line 38 in file rx_data.s
+   Uses
+      None
+Comment: UART0CC unused
+UART0CTL 4000C030
+
+Symbol: UART0CTL
+   Definitions
+      At line 37 in file rx_data.s
+   Uses
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Absolute symbols
+
+      None
+Comment: UART0CTL unused
+UART0DR 4000C000
+
+Symbol: UART0DR
+   Definitions
+      At line 32 in file rx_data.s
+   Uses
+      None
+Comment: UART0DR unused
+UART0FBRD 4000C028
+
+Symbol: UART0FBRD
+   Definitions
+      At line 35 in file rx_data.s
+   Uses
+      None
+Comment: UART0FBRD unused
+UART0FR 4000C018
+
+Symbol: UART0FR
+   Definitions
+      At line 33 in file rx_data.s
+   Uses
+      None
+Comment: UART0FR unused
+UART0IBRD 4000C024
+
+Symbol: UART0IBRD
+   Definitions
+      At line 34 in file rx_data.s
+   Uses
+      None
+Comment: UART0IBRD unused
+UART0LCRH 4000C02C
+
+Symbol: UART0LCRH
+   Definitions
+      At line 36 in file rx_data.s
+   Uses
+      None
+Comment: UART0LCRH unused
+34 symbols
+369 symbols in table
